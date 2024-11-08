@@ -1,16 +1,25 @@
 ---
+import Base from "../layouts/Base.astro"
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>TimeGritty</title>
-	</head>
-	<body>
-		<h1>TimeGritty</h1>
+<Base>
+	<h1>TimeGritty</h1>
 
-	</body>
-</html>
+	<button id="login">Login</button>
+</Base>
+
+<script>
+	const logoutButton = document.getElementById("login");
+	if (logoutButton) {
+		logoutButton.addEventListener("click", () => {
+		fetch("/api/login", { method: "POST"})
+			.then((res) => {
+				if (!res.ok) throw new Error("Not ok!")
+				window.location.href = "/protected"
+			}).catch((error) => {
+				console.warn("Fetch failed")
+				console.error(error)
+			})
+		})
+	}
+</script>
