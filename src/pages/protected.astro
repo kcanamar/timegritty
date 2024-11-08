@@ -1,0 +1,33 @@
+---
+import Base from "../layouts/Base.astro"
+
+// NEON .astro config
+import { neon } from "@neondatabase/serverless"
+
+const sql = neon(import.meta.env.DATABASE_URL);
+const response = await sql`SELECT version()`;
+const data = response[0].version;
+
+---
+
+<Base>
+	<h1>Here is the protected data</h1>
+	{data}
+	<button id="logout">Logout</button>
+</Base>
+
+<script>
+	const logoutButton = document.getElementById("logout");
+	if (logoutButton) {
+		logoutButton.addEventListener("click", () => {
+		fetch("/api/logout", { method: "POST"})
+			.then((res) => {
+				if (!res.ok) throw new Error("Not ok!")
+				window.location.href = "/"
+			}).catch((error) => {
+				console.warn("Fetch failed")
+				console.error(error)
+			})
+		})
+	}
+</script>
