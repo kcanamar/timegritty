@@ -1,8 +1,10 @@
 import { errors, jwtVerify } from "jose";
 import { defineMiddleware } from "astro:middleware";
 import { TOKEN, PUBLIC_ROUTES } from "./utils/constant.ts";
+import { neon } from "@neondatabase/serverless";
 
 const secret = new TextEncoder().encode(import.meta.env.JWT_SECRET_KEY);
+const sql = neon(import.meta.env.DATABASE_URL);
 
 const verifyAuth = async (token?: string) => {
   if (!token) {
@@ -29,28 +31,41 @@ const verifyAuth = async (token?: string) => {
   }
 }
 
-export const onRequest = defineMiddleware(async (context, next) => {
-  if (PUBLIC_ROUTES.includes(context.url.pathname)) return next();
+export const onRequest = defineMiddleware(async ({cookies, url, locals}, next) => {
+  if (PUBLIC_ROUTES.includes(url.pathname)) return next();
 
-  const token = context.cookies.get(TOKEN);
+  const token = cookies.get(TOKEN);
   const validationResult = await verifyAuth(token?.value);
 
   switch (validationResult.status) {
     case "authorized":
+      // check the db for the current user session
+      // need to break this up into two steps to check at each step if the USER has a current session
+      try {
+        const session = await sql`SELECT * FROM user_sessions WHERE auth_token = ${token.value}`
+        const user = await sql`SELECT u.name FROM "user" u WHERE u.id = ${session[0].user_id}`;
+        if (user) {
+          // provide the current user.id to locals
+          locals.authUser = user[0].name
+        }
+      } catch (error) {
+        
+      }
       return next();
 
     case "error":
     case "unauthorized":
-      if (context.url.pathname.startsWith("/api/")) {
+      if (url.pathname.includes("/api/")) {
         return new Response(JSON.stringify({ message: validationResult.msg }), { 
           status: 401 
         })
       }
       else {
-        return Response.redirect(new URL("/", context.url));
+        console.log("else", url.pathname)
+        return Response.redirect(new URL("/", url));
       }
 
     default:
-      return Response.redirect(new URL("/", context.url));
+      return Response.redirect(new URL("/", url));
   }
 })

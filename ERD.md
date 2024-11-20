@@ -1,6 +1,6 @@
 # ERD
 
-Entity Realtionship Diagram.
+Entity Relationship Diagram.
 
 ```mermaid
 erDiagram
@@ -11,7 +11,8 @@ erDiagram
         string password_hash
         timestamp created_at
         timestamp updated_at
-		enum teir
+		enum tier
+        boolean verified
     }
 
     QUARTER {

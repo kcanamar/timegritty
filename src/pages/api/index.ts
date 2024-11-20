@@ -1,8 +1,9 @@
 // NEON CONFIGURATION
-
 import {neon} from "@neondatabase/serverless";
+import type { APIRoute } from "astro";
 
-export async function GET() {
+export const GET:APIRoute = async ({ request }) => {
+	console.log({request})
 	const sql = neon(import.meta.env.DATABASE_URL);
 	const response = await sql`SELECT version()`;
 

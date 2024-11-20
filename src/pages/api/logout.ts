@@ -1,16 +1,18 @@
 import type { APIRoute } from "astro";
 import { TOKEN } from "../../utils/constant.ts";
 
-export const POST: APIRoute = async (ctx) => {
+export const POST: APIRoute = async ({ cookies, redirect }) => {
 	try {
-		ctx.cookies.set(TOKEN, "", {
+		cookies.set(TOKEN, "", {
 			httpOnly: true,
 			maxAge: 0,
 			path: "/",
 		})
-		return new Response(JSON.stringify({ message: "Login success"}), { status: 200 })
+		return redirect("/") 
 	} catch (err) {
 		console.debug(err);
+
+		// TODO Return to the login page with the following message for the login astro component
 		return new Response(JSON.stringify({ message: "Logout fail"}), { status: 500 })
 	}
 }

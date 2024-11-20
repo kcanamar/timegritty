@@ -1,25 +1,15 @@
 ---
 import Base from "../layouts/Base.astro"
+import LogoutForm from "../components/Forms/Logout.astro"
+import LoginForm from "../components/Forms/Login.astro"
+import RegisterForm from "../components/Forms/Register.astro"
 ---
 
 <Base>
+	<LogoutForm action="/api/logout"/>
 	<h1>TimeGritty</h1>
+	<LoginForm action="/api/login"/>
+	<RegisterForm action="/api/user"/>
 
-	<button id="login">Login</button>
 </Base>
 
-<script>
-	const logoutButton = document.getElementById("login");
-	if (logoutButton) {
-		logoutButton.addEventListener("click", () => {
-		fetch("/api/login", { method: "POST"})
-			.then((res) => {
-				if (!res.ok) throw new Error("Not ok!")
-				window.location.href = "/protected"
-			}).catch((error) => {
-				console.warn("Fetch failed")
-				console.error(error)
-			})
-		})
-	}
-</script>
