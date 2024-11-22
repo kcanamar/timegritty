@@ -1,0 +1,435 @@
+---
+import ResponsiveToggle from './ResponsiveToggle.astro'
+import Logout from '../components/Forms/Logout.astro'
+import { Icon } from 'astro-icon/components';
+
+const user = Astro.locals?.authUser?.name
+console.log(user, "nav component")
+---
+<div id="main-nav" class="is-desktop">
+	<div class="desktop-menu">
+		<nav>
+			<ul>
+				<li class="brand-logo">
+					<!-- await import('brandLogo.svg') -->
+					 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCC5n1EjQ68IDMLchPOgi5FiG8iazjBBaI4gy_jwzXack0kiksri-yIUqgohhc4Pum8R4&usqp=CAU" alt="TimeGritty Logo">
+					<span class="sr-only">TimeGritty</span>
+				</li>
+				<li class="menu-item">
+					<button class="toggle-expanded-view" aria-expanded="false">
+						<Icon name="double-right-chevron"/>
+						<span class="sr-only">Expand Menu</span>
+					</button>
+				</li>
+
+				{user ? (
+				<slot/>
+				<li class="menu-item bottom-position">
+					<Logout />
+				</li>
+				<li class="menu-item bottom-position settings">
+					<a href="/settings">
+						<Icon name="setting"/>
+						<span class="sr-only">Settings</span>
+					</a>
+				</li>
+				) : (
+				<li class="menu-item bottom-position">
+					<a href="/login">
+						<span class="sr-only">Login</span>
+					</a>
+				</li>
+				)}
+			</ul>
+		</nav>
+	</div>
+	<div class="container mobile-menu">
+		<a href="/">
+			<!-- await import('logo.svg').default-->
+			<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCC5n1EjQ68IDMLchPOgi5FiG8iazjBBaI4gy_jwzXack0kiksri-yIUqgohhc4Pum8R4&usqp=CAU" height="32px" alt="TimeGritty Logo">
+		</a>
+		<ResponsiveToggle />
+		<nav>
+			<ul>
+				{user ? (
+				<slot />
+				<li class="menu-item bottom-position">
+					{/* TODO: modal that will have a confirmation to logout submitting the logout form */}
+						<Logout />			
+				</li>
+				<li class="menu-item bottom-position settings">
+					<a href="/settings">
+						<Icon name="setting"/>
+						<span class="sr-only">Settings</span>
+					</a>
+				</li>
+				) : (
+				<li class="menu-item bottom-position">
+					<a href="/login">
+						<span class="sr-only">Login</span>
+					</a>
+				</li>
+				)}
+			</ul>
+		</nav>
+	</div>
+</div>
+
+
+<script>
+import { GritError } from "../utils/error.ts"
+
+const mainNav = document.querySelector('#main-nav') as HTMLElement | null
+if (!mainNav) throw new GritError('Main nav element not found', 'UI_FAILURE')
+const mainMenu = mainNav?.querySelector('ul') as HTMLElement | null
+if (!mainMenu) throw new GritError('Main menu element not found', 'UI_FAILURE')
+const toggleExpandedView = document.querySelector('.toggle-expanded-view') as HTMLElement | null
+if (!toggleExpandedView) throw new GritError('Toggle expanded view element not found', 'UI_FAILURE')
+const menuIconLabels = [...mainNav.querySelectorAll('.sr-only')]
+const mediaQuery = window.matchMedia('(min-width: 48em)') 
+let isMenuExpanded = localStorage.getItem('isMenuExpanded')
+
+
+const setActiveMenuItem = () => {
+	const menuItems = [...mainMenu.querySelectorAll('a')]
+
+	menuItems?.forEach(menuItem => {
+		if (menuItem.pathname === window.location.pathname) {
+			menuItem?.classList.add('is-active')
+			menuItem?.setAttribute('aria-current', 'page')
+		}
+	})
+}
+
+const expandMenu = () => {
+	mainNav?.classList.add('is-expanded')
+	localStorage?.setItem('isMenuExpanded', 'true')
+	toggleExpandedView.setAttribute('aria-expanded', 'true')
+	const toggleSpan = toggleExpandedView.querySelector('span') as HTMLElement | null
+	if (!toggleSpan) throw new GritError('Toggle span element not found', "UI_FAILURE")
+	toggleSpan.textContent = 'Collapse menu'
+
+	menuIconLabels.forEach(menuIconLabel => {
+		menuIconLabel?.classList.remove('sr-only')
+	})
+}
+
+const collapseMenu = () => {
+	mainNav?.classList.remove('is-expanded')
+	localStorage?.setItem('isMenuExpanded', '')
+	toggleExpandedView.setAttribute('aria-expanded', 'false')
+	const toggleSpan = toggleExpandedView.querySelector('span') as HTMLElement | null
+	if (!toggleSpan) throw new GritError('Toggle span element not found', "UI_FAILURE")
+	toggleSpan.textContent = 'Expand menu'
+
+	menuIconLabels.forEach(menuIconLabel => {
+		menuIconLabel?.classList.add('sr-only')
+	})
+}
+
+const checkViewportWidth = () => {
+	if (mediaQuery?.matches) {
+		mainNav?.classList.add('is-desktop')
+		mainNav?.classList.remove('is-mobile')
+		collapseMenu()
+	} else {
+		mainNav?.classList.remove('is-desktop')
+		mainNav?.classList.add('is-mobile')
+		collapseMenu()
+	}
+}
+
+mainMenu && mainMenu?.addEventListener('keydown', event => {
+	const currentMenuItem = (event.target as Element)?.closest('li')
+	const menuItems = [...mainMenu?.querySelectorAll('.menu-item')]
+	const currentIndex = menuItems?.findIndex(item => item === currentMenuItem)
+
+	const key = event.key
+	let targetItem
+
+	if (key === 'ArrowDown') {
+		event.preventDefault()
+		if (currentMenuItem && menuItems.indexOf(currentMenuItem as Element) === menuItems.length - 1) {
+			targetItem = menuItems[0]
+		} else {
+			targetItem = menuItems[currentIndex + 1]
+		}
+	}
+
+	if (key === 'ArrowUp') {
+		event.preventDefault()
+		if (currentMenuItem && menuItems.indexOf(currentMenuItem as Element) === 0) {
+			targetItem = menuItems[menuItems?.length - 1]
+		} else {
+			targetItem = menuItems[currentIndex - 1]
+	      	}
+	}
+
+	if (key === 'Escape') {
+		targetItem = menuItems[0]
+	}
+
+	if (targetItem) {
+		const focusableElement = targetItem?.querySelector('a, button, input') as HTMLElement | null
+		focusableElement?.focus()
+	}
+	})
+
+	toggleExpandedView?.addEventListener('click', () => {
+		mainNav?.classList?.contains('is-expanded')
+		? collapseMenu()
+		: expandMenu()
+	})
+
+	window.addEventListener('resize', checkViewportWidth)
+
+	setActiveMenuItem()
+	checkViewportWidth()
+
+	if (isMenuExpanded === 'true') {
+		expandMenu()
+	}
+</script>
+
+<style is:global>
+.responsive-toggle {
+    display: none;
+    padding: 0;
+    border: none
+}
+
+.responsive-toggle svg {
+    width: 30px;
+}
+
+.responsive-toggle svg path {
+    stroke: ;
+    transition: stroke .2s ease-in-out
+}
+
+.responsive-toggle:hover svg path {
+    stroke: ;
+}
+
+#main-nav {
+	background-color: ;
+}
+
+#main-nav>.container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+		padding-top: 1rem;
+		padding-bottom: 1rem;
+}
+
+#main-nav.is-desktop {
+		width: 3.75rem;
+		min-height: 100svh;
+		position: fixed;
+		z-index: 1;
+		box-shadow: 0 0 2.5rem #00000026;
+}
+
+#main-nav.is-desktop .mobile-menu {
+	display: none;
+} 
+
+#main-nav.is-mobile {
+	flex-direction: column;
+}
+
+#main-nav.is-mobile .mobile-menu nav {
+	display: none;
+} 
+
+#main-nav.is-mobile .mobile-menu.show nav {
+	display: block;
+} 
+
+#main-nav.is-mobile .responsive-toggle {
+	display: block;
+} 
+
+#main-nav.is-mobile .desktop-menu {
+	display: none;
+} 
+
+#main-nav nav {
+	width: 100%;
+}
+
+#main-nav nav>ul {
+	display:flex;
+	width: 100%;
+}
+
+#main-nav nav>ul .is-active {
+	font-weight: 700;
+}
+
+#main-nav nav li, #main-nav nav a, #main-nav nav button {
+	width: 100%;
+}
+
+#main-nav nav a,#main-nav nav button {
+    display: flex;
+    justify-content: center;
+    padding: 1rem 0;
+    color: ;
+    transition: color .2s ease-in-out,background-color .2s ease-in-out
+}
+
+#main-nav nav .setting a {
+    padding: 0
+}
+
+#main-nav nav .setting a svg {
+    padding: .5rem;
+    max-width: 60px;
+    border-radius: 100%
+}
+
+#main-nav nav button {
+    border: none;
+
+}
+
+#main-nav nav svg {
+    width: 30px;
+		font-size: 1.5rem;
+}
+
+#main-nav nav svg path {
+    fill: ;
+    transition: fill .2s ease-in-out
+}
+
+#main-nav nav a:hover, #main-nav nav a:focus, #main-nav nav a.is-active, #main-nav nav button:hover, #main-nav nav button:not(.toggle-expanded-view):focus {
+    color: ;
+    background-color: ;
+}
+
+#main-nav nav a:hover svg path, #main-nav nav a:focus svg path, #main-nav nav a.is-active svg path, #main-navigation nav button:hover svg path, #main-nav nav button:not(.toggle-expanded-view):focus svg path {
+    fill: ;
+}
+
+#main-nav .desktop-menu {
+	display: flex;
+	flex-direction: column;	
+	justify-content: space-between;
+	min-height: 100%;
+}
+
+#main-nav .desktop-menu ul {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-height: 100svh;
+	position: relative;
+}
+
+#main-nav .desktop-menu ul .bottom-position {
+    position: absolute
+}
+
+#main-nav .desktop-menu ul .bottom-position:nth-last-of-type(1) {
+    bottom: 0
+}
+
+#main-nav .desktop-menu ul .bottom-position:nth-last-of-type(2) {
+    bottom: 3.75rem
+}
+
+#main-nav .desktop-menu ul .bottom-position:nth-last-of-type(3) {
+    bottom: 8rem
+}
+
+#main-nav .desktop-menu ul .brand-logo {
+	display: flex;
+	align-items: center;
+	gap: .5rem;
+	padding: 1rem;
+	color: ;
+	background-color: ;
+}
+
+#main-nav .desktop-menu ul .brand-logo img {
+	max-height: 1.1rem;
+}
+
+#main-nav .desktop-menu .toggle-expanded-view svg {
+    padding-top: 3px;
+}
+
+#main-nav .desktop-menu .toggle-expanded-view span {
+    text-decoration: underline;
+}
+
+#main-nav .desktop-menu .toggle-expanded-view:hover span, #main-nav .desktop-menu .toggle-expanded-view:focus span {
+    text-decoration: none;
+}
+
+#main-nav.is-expanded {
+    width: 12.5rem;
+}
+
+#main-nav.is-expanded .desktop-menu a, #main-nav.is-expanded .desktop-menu button {
+    justify-content: left;
+    align-items: center;
+    gap: .5rem;
+    padding: 1rem .75rem;
+}
+
+#main-nav.is-expanded .desktop-menu .setting a {
+    padding: .5rem .3rem 0;
+}
+
+#main-nav.is-expanded~main {
+    margin-left: 200px
+}
+
+#main-nav .mobile-menu nav>ul {
+    flex-direction: column;
+    margin-top: 1rem
+}
+
+#main-nav .mobile-menu nav>ul a {
+    justify-content: start;
+    align-items: center;
+    gap: .5rem
+}
+
+#main-nav .mobile-menu nav>ul a:hover, #main-nav .mobile-menu nav>ul a:focus {
+    color: ;
+    background-color: transparent
+}
+
+#main-nav .mobile-menu nav>ul a:hover svg path, #main-nav .mobile-menu nav>ul a:focus svg path {
+    fill: ;
+}
+
+#main-nav .mobile-menu nav svg {
+    width: 35px;
+}
+
+#main-nav .mobile-menu nav svg path {
+    transition: fill .2s ease-in-out;
+}
+
+
+.sr-only {
+	position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  margin: 0;
+  padding: 0;
+  width: 1px;
+  height: auto;
+  border: 0;
+  white-space: nowrap;
+}
+
+
+
+</style>

@@ -1,15 +1,12 @@
 ---
 import Base from "../layouts/Base.astro"
-import LogoutForm from "../components/Forms/Logout.astro"
 import LoginForm from "../components/Forms/Login.astro"
 import RegisterForm from "../components/Forms/Register.astro"
 ---
 
-<Base>
-	<LogoutForm action="/api/logout"/>
+<Base title='TimeGritty' >
 	<h1>TimeGritty</h1>
 	<LoginForm action="/api/login"/>
 	<RegisterForm action="/api/user"/>
-
 </Base>
 

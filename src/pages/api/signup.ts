@@ -3,7 +3,7 @@ import type { APIRoute } from "astro";
 import bcrypt from "bcryptjs";
 import { TOKEN } from "../../utils/constant.ts";
 import { neon } from "@neondatabase/serverless";
-import { getErrorCode, GritError } from "./src/utils/error.ts";
+import { getErrorCode, GritError } from "../../utils/error.ts";
 
 const secret = new TextEncoder().encode(import.meta.env.JWT_SECRET_KEY);
 const sql = neon(import.meta.env.DATABASE_URL)
@@ -47,7 +47,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
 			.setExpirationTime("2h")
 			.sign(secret)
 		// Insert the newUser in to the session table with the matching token
-		const sessionCheck = await sql`
+		await sql`
 			INSERT INTO user_sessions (user_id, auth_token)
 			VALUES (${newUser[0].id}, ${token})
 		`
@@ -56,7 +56,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
 			path: "/",
 			maxAge: 60 * 60 * 2,
 		})
-		return redirect("/protected")
+		return redirect("/dashboard")
 	} catch (err) {
 		console.debug(err);
 		try {

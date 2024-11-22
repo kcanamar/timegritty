@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import type { APIRoute } from "astro";
 import { TOKEN } from "../../utils/constant.ts";
 import { neon } from "@neondatabase/serverless";
-import { getErrorCodes, GritError } from "../../utils/error.ts";
+// import { getErrorCode, GritError } from "../../utils/error.ts";
 const secret = new TextEncoder().encode(import.meta.env.JWT_SECRET_KEY);
 const sql = neon(import.meta.env.DATABASE_URL)
 
@@ -28,26 +28,26 @@ export const POST: APIRoute = async ({ request, cookies, redirect, locals }) => 
 					.setExpirationTime("2h")
 					.sign(secret)
 				// check if the auth_token is the current token
-				const isSession = findSession[0].auth_token === existingSession
+				const hasSession = findSession[0].auth_token === existingSession
 				// check if today's date is less than invalid_at
 				const isValid = new Date(findSession[0].invalid_at).getTime() > Date.now()
 				if (isValid){
-					if (isSession) {
+					if (hasSession) {
 						// if the auth_token check is true update the invalid_at, update_at for the session information
-						const extendValidation = await sql`
+						await sql`
 							UPDATE user_sessions 
 							SET invalid_at = CURRENT_TIMESTAMP + INTERVAL '30 days', updated_at = CURRENT_TIMESTAMP
 							WHERE session_id = ${findSession[0].session_id}
 						`
 					} else {
-						const refreshToken = await sql`
+						await sql`
 							UPDATE user_sessions 
 							SET invalid_at = CURRENT_TIMESTAMP + INTERVAL '30 days', updated_at = CURRENT_TIMESTAMP, auth_token = ${token}
 							WHERE session_id = ${findSession[0].session_id}
 						`
 					}
 				} else {
-					const newSession = await sql`
+					await sql`
 						INSERT INTO user_sessions (user_id, auth_token)
 						VALUES (${userCheck[0].id}, ${token})
 					`
@@ -62,7 +62,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect, locals }) => 
 					path: "/",
 					maxAge: 60 * 60 * 2,
 				})
-				return redirect("/protected")
+				return redirect("/dashboard")
 			} catch (error) {
 				console.debug(error);
 				// TODO Return to the error page. 

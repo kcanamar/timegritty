@@ -1,40 +1,27 @@
 ---
 import Base from "../layouts/Base.astro"
 import RegisterForm from "../components/Forms/Register.astro"
-
-const errMessages: Record<string, { title: string, description: string }> = {
-	'USER_EXISTS': {
-		title: 'User Already Exists',
-		description: 'An account with this email already exists. Please try logging in instead.'
-	},
-	'INVALID_CREDS': {
-		title: 'Invalid Credentials',
-		description: 'The provided credentials are incorrect. Please try again.'
-	},
-	'JWT_COOKIE': {
-		title: 'Error with JWT',
-		description: 'The provided credentials are incorrect. Please try again.'
-	},
-	'UNAUTHORIZED': {
-		title: 'Not Authorized',
-		description: 'You do not have permission to perform this action.'
-	},
-	'UNKNOWN_ERROR': {
-		title: 'Something Went Wrong',
-		description: 'An unexpected error occurred. Please try again later.'
-	}
-}
+import LoginForm from "../components/Forms/Login.astro"
+import { errMessages } from "../utils/error.ts"
 
 const code = Astro.url.searchParams.get('code') || 'UNKNOWN_ERROR'
 const errorInfo = errMessages[code]
 console.log({code,  errorInfo, errMessages})
+
 ---
 
-<Base>
+<Base title={code}>
 	{(errorInfo && <div>
 		<h1>{errorInfo.title}</h1>
 		<p>{errorInfo.description}</p>
+		{code === "USER_EXISTS" && (
+			<RegisterForm/>
+			<a href="/login">Follow me to Login.</a>
+		)}
+		{code === "UNAUTHORIZED" && (
+			<LoginForm/>
+			<a href="/signup">Follow me to Sign Up.</a>
+		)}
 		<a href="/">Back to Home</a>
-		{code === 'USER_EXISTS' && <RegisterForm/>}
 	</div>)}
 </Base>

@@ -12,7 +12,7 @@ export const POST: APIRoute = async ({ cookies, redirect }) => {
 	} catch (err) {
 		console.debug(err);
 
-		// TODO Return to the login page with the following message for the login astro component
+		// TODO Return to the error page with the error.
 		return new Response(JSON.stringify({ message: "Logout fail"}), { status: 500 })
 	}
 }
