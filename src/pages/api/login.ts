@@ -22,10 +22,11 @@ export const POST: APIRoute = async ({ request, cookies, redirect, locals }) => 
 		const findSession = await sql`SELECT * FROM user_sessions WHERE user_id=${userCheck[0].id}`
 		if (userCheck && bcrypt.compareSync(String(formData.password), userCheck[0].password_hash)) {
 			try {
+				// TODO move the token to its own file.
 				const token = await new SignJWT({})
 					.setProtectedHeader({ alg: 'HS256' })
 					.setIssuedAt()
-					.setExpirationTime("2h")
+					.setExpirationTime("2d")
 					.sign(secret)
 				// check if the auth_token is the current token
 				const hasSession = findSession[0].auth_token === existingSession

@@ -17,7 +17,8 @@ console.log(user, "nav component")
 				</li>
 				<li class="menu-item">
 					<button class="toggle-expanded-view" aria-expanded="false">
-						<Icon name="double-right-chevron"/>
+						<Icon name="double-right-chevron" class="icon-right"/>
+						<Icon name="double-left-chevron" class="icon-left icon-hidden"/>
 						<span class="sr-only">Expand Menu</span>
 					</button>
 				</li>
@@ -28,7 +29,7 @@ console.log(user, "nav component")
 					<Logout />
 				</li>
 				<li class="menu-item bottom-position settings">
-					<a href="/settings">
+					<a href="/settings" class="logout-link is-active">
 						<Icon name="setting"/>
 						<span class="sr-only">Settings</span>
 					</a>
@@ -36,6 +37,7 @@ console.log(user, "nav component")
 				) : (
 				<li class="menu-item bottom-position">
 					<a href="/login">
+						<Icon name="login"/>
 						<span class="sr-only">Login</span>
 					</a>
 				</li>
@@ -53,19 +55,20 @@ console.log(user, "nav component")
 			<ul>
 				{user ? (
 				<slot />
-				<li class="menu-item bottom-position">
+				<li class="menu-item bottom-position logout-btn">
 					{/* TODO: modal that will have a confirmation to logout submitting the logout form */}
 						<Logout />			
 				</li>
 				<li class="menu-item bottom-position settings">
-					<a href="/settings">
+					<a href="/settings" class="menu-item">
 						<Icon name="setting"/>
 						<span class="sr-only">Settings</span>
 					</a>
 				</li>
 				) : (
-				<li class="menu-item bottom-position">
+				<li class="menu-item bottom-position login-btn">
 					<a href="/login">
+						<Icon name="login"/>
 						<span class="sr-only">Login</span>
 					</a>
 				</li>
@@ -79,12 +82,20 @@ console.log(user, "nav component")
 <script>
 import { GritError } from "../utils/error.ts"
 
+const mainContent = document.querySelector('#main-content') as HTMLElement | null
+if (!mainContent) throw new GritError('Main content element not found', 'UI_FAILURE')
 const mainNav = document.querySelector('#main-nav') as HTMLElement | null
 if (!mainNav) throw new GritError('Main nav element not found', 'UI_FAILURE')
 const mainMenu = mainNav?.querySelector('ul') as HTMLElement | null
 if (!mainMenu) throw new GritError('Main menu element not found', 'UI_FAILURE')
 const toggleExpandedView = document.querySelector('.toggle-expanded-view') as HTMLElement | null
 if (!toggleExpandedView) throw new GritError('Toggle expanded view element not found', 'UI_FAILURE')
+const toggleSpan = toggleExpandedView.querySelector('span') as HTMLElement | null
+if (!toggleSpan) throw new GritError('Toggle span element not found', "UI_FAILURE")
+const toggleIconRight = toggleExpandedView.querySelector('.icon-right') as HTMLElement | null
+if (!toggleIconRight) throw new GritError('Toggle icon right element not found', "UI_FAILURE")
+const toggleIconLeft = toggleExpandedView.querySelector('.icon-left') as HTMLElement | null
+if (!toggleIconLeft) throw new GritError('Toggle icon left element not found', "UI_FAILURE")
 const menuIconLabels = [...mainNav.querySelectorAll('.sr-only')]
 const mediaQuery = window.matchMedia('(min-width: 48em)') 
 let isMenuExpanded = localStorage.getItem('isMenuExpanded')
@@ -99,15 +110,18 @@ const setActiveMenuItem = () => {
 			menuItem?.setAttribute('aria-current', 'page')
 		}
 	})
+
 }
 
 const expandMenu = () => {
 	mainNav?.classList.add('is-expanded')
+	mainContent?.classList.add('is-expanded')
 	localStorage?.setItem('isMenuExpanded', 'true')
 	toggleExpandedView.setAttribute('aria-expanded', 'true')
-	const toggleSpan = toggleExpandedView.querySelector('span') as HTMLElement | null
-	if (!toggleSpan) throw new GritError('Toggle span element not found', "UI_FAILURE")
 	toggleSpan.textContent = 'Collapse menu'
+
+	toggleIconLeft?.classList.remove('icon-hidden')
+	toggleIconRight?.classList.add('icon-hidden')
 
 	menuIconLabels.forEach(menuIconLabel => {
 		menuIconLabel?.classList.remove('sr-only')
@@ -116,11 +130,13 @@ const expandMenu = () => {
 
 const collapseMenu = () => {
 	mainNav?.classList.remove('is-expanded')
+	mainContent?.classList.remove('is-expanded')
 	localStorage?.setItem('isMenuExpanded', '')
 	toggleExpandedView.setAttribute('aria-expanded', 'false')
-	const toggleSpan = toggleExpandedView.querySelector('span') as HTMLElement | null
-	if (!toggleSpan) throw new GritError('Toggle span element not found', "UI_FAILURE")
 	toggleSpan.textContent = 'Expand menu'
+
+	toggleIconRight?.classList.remove('icon-hidden')
+	toggleIconLeft?.classList.add('icon-hidden')
 
 	menuIconLabels.forEach(menuIconLabel => {
 		menuIconLabel?.classList.add('sr-only')
@@ -192,6 +208,13 @@ mainMenu && mainMenu?.addEventListener('keydown', event => {
 </script>
 
 <style is:global>
+.icon-hidden {
+	display: none;
+}
+
+.icon-active {
+	display: block;
+}
 .responsive-toggle {
     display: none;
     padding: 0;
@@ -203,16 +226,16 @@ mainMenu && mainMenu?.addEventListener('keydown', event => {
 }
 
 .responsive-toggle svg path {
-    stroke: ;
+    stroke: var(--primary-300);
     transition: stroke .2s ease-in-out
 }
 
 .responsive-toggle:hover svg path {
-    stroke: ;
+    stroke: var(--secondary-200);
 }
 
 #main-nav {
-	background-color: ;
+	background-color: var(--neutral-900);
 }
 
 #main-nav>.container {
@@ -268,15 +291,19 @@ mainMenu && mainMenu?.addEventListener('keydown', event => {
 	font-weight: 700;
 }
 
-#main-nav nav li, #main-nav nav a, #main-nav nav button {
+#main-nav nav li,
+#main-nav nav a,
+#main-nav nav button {
 	width: 100%;
+	text-decoration: none;
 }
 
-#main-nav nav a,#main-nav nav button {
+#main-nav nav a,
+#main-nav nav button {
     display: flex;
     justify-content: center;
     padding: 1rem 0;
-    color: ;
+    color: var(--neutral-300);
     transition: color .2s ease-in-out,background-color .2s ease-in-out
 }
 
@@ -292,8 +319,9 @@ mainMenu && mainMenu?.addEventListener('keydown', event => {
 
 #main-nav nav button {
     border: none;
-
+		align-items: center;
 }
+
 
 #main-nav nav svg {
     width: 30px;
@@ -301,17 +329,25 @@ mainMenu && mainMenu?.addEventListener('keydown', event => {
 }
 
 #main-nav nav svg path {
-    fill: ;
+    stroke: var(--neutral-600);
     transition: fill .2s ease-in-out
 }
 
-#main-nav nav a:hover, #main-nav nav a:focus, #main-nav nav a.is-active, #main-nav nav button:hover, #main-nav nav button:not(.toggle-expanded-view):focus {
-    color: ;
-    background-color: ;
+#main-nav nav a:hover,
+#main-nav nav a:focus,
+#main-nav nav a.is-active,
+#main-nav nav button:hover,
+#main-nav nav button:not(.toggle-expanded-view):focus {
+    color: var(--neutral-800);
+    background-color: var(--secondary-200);
 }
 
-#main-nav nav a:hover svg path, #main-nav nav a:focus svg path, #main-nav nav a.is-active svg path, #main-navigation nav button:hover svg path, #main-nav nav button:not(.toggle-expanded-view):focus svg path {
-    fill: ;
+#main-nav nav a:hover svg path,
+#main-nav nav a:focus svg path,
+#main-nav nav a.is-active svg path,
+#main-nav nav button:hover svg path,
+#main-nav nav button:not(.toggle-expanded-view):focus svg path {
+    stroke: var(--neutral-800);
 }
 
 #main-nav .desktop-menu {
@@ -348,25 +384,18 @@ mainMenu && mainMenu?.addEventListener('keydown', event => {
 #main-nav .desktop-menu ul .brand-logo {
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	gap: .5rem;
 	padding: 1rem;
-	color: ;
-	background-color: ;
+	color: var(--neutral-100);
+	background-color: var(--neutral-700);
 }
 
 #main-nav .desktop-menu ul .brand-logo img {
-	max-height: 1.1rem;
+	max-height: 1.5rem;
 }
-
-#main-nav .desktop-menu .toggle-expanded-view svg {
-    padding-top: 3px;
-}
-
-#main-nav .desktop-menu .toggle-expanded-view span {
-    text-decoration: underline;
-}
-
-#main-nav .desktop-menu .toggle-expanded-view:hover span, #main-nav .desktop-menu .toggle-expanded-view:focus span {
+#main-nav .desktop-menu .toggle-expanded-view:hover span,
+#main-nav .desktop-menu .toggle-expanded-view:focus span {
     text-decoration: none;
 }
 
@@ -374,7 +403,8 @@ mainMenu && mainMenu?.addEventListener('keydown', event => {
     width: 12.5rem;
 }
 
-#main-nav.is-expanded .desktop-menu a, #main-nav.is-expanded .desktop-menu button {
+#main-nav.is-expanded .desktop-menu a,
+#main-nav.is-expanded .desktop-menu button {
     justify-content: left;
     align-items: center;
     gap: .5rem;
@@ -385,7 +415,7 @@ mainMenu && mainMenu?.addEventListener('keydown', event => {
     padding: .5rem .3rem 0;
 }
 
-#main-nav.is-expanded~main {
+#main-content.is-expanded {
     margin-left: 200px
 }
 
@@ -393,20 +423,25 @@ mainMenu && mainMenu?.addEventListener('keydown', event => {
     flex-direction: column;
     margin-top: 1rem
 }
-
 #main-nav .mobile-menu nav>ul a {
     justify-content: start;
     align-items: center;
+		text-align: center;
     gap: .5rem
 }
 
-#main-nav .mobile-menu nav>ul a:hover, #main-nav .mobile-menu nav>ul a:focus {
-    color: ;
+#main-nav .mobile-menu nav>ul a:hover, 
+#main-nav .mobile-menu nav>ul a:focus,
+#main-nav .mobile-menu nav>ul a.is-active,
+#main-nav .mobile-menu nav>ul button:hover,
+#main-nav .mobile-menu nav>ul button:focus{
+    color: var(--primary-200);
     background-color: transparent
 }
 
-#main-nav .mobile-menu nav>ul a:hover svg path, #main-nav .mobile-menu nav>ul a:focus svg path {
-    fill: ;
+#main-nav .mobile-menu nav>ul a:hover svg path,
+#main-nav .mobile-menu nav>ul a:focus svg path {
+    fill: var(--neutral-600);
 }
 
 #main-nav .mobile-menu nav svg {
@@ -417,6 +452,10 @@ mainMenu && mainMenu?.addEventListener('keydown', event => {
     transition: fill .2s ease-in-out;
 }
 
+#main-nav nav .logout-btn button {
+	justify-content: start;
+	gap: .5rem;
+}
 
 .sr-only {
 	position: absolute;

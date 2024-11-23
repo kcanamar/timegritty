@@ -32,13 +32,13 @@ const { title } = Astro.props
 					</a>
 				</li>
 				<li class="menu-item">
-					<a href="#">
+					<a href="/report">
 						<Icon name="report"/>
 						<span class="sr-only">Check-In</span>
 					</a>
 				</li>
 				<li class="menu-item">
-					<a href="#">
+					<a href="/plan">
 						<Icon name="plan"/>
 						<span class="sr-only">Quarter Plan</span>
 					</a>
@@ -110,6 +110,7 @@ button {
     border-radius: 0;
     background-color: transparent;
     line-height: 1
+		text-align: center;
 }
 
 b:where * {
@@ -223,9 +224,9 @@ noscript {
 }
 
 body {
-    color: ;
-    background-color: ;
-    font-family: ;
+    color: var(--font-color);
+    background-color: var(--background);
+    font-family: var(--font-family-default);
     text-shadow: rgba(0,0,0,.01) 0 0 1px;
     text-rendering: optimizeLegibility;
     -moz-osx-font-smoothing: grayscale;
@@ -277,6 +278,9 @@ body {
 .darkmode-toggle svg {
     width: 30px
 }
+.darkmode-toggle svg path {
+	fill: var(--neutral-100)
+}
 
 @media (min-width: 48em) {
     .darkmode-toggle svg {
@@ -293,7 +297,7 @@ body {
 }
 
 .darkmode-toggle:hover svg path {
-    fill: var(--primary-400)
+    fill: var(--secondary-100)
 }
 
 .darkmode-toggle:focus {
@@ -309,7 +313,7 @@ body {
 }
 
 .darkmode .darkmode-toggle:hover svg path {
-    fill: var(--primary-400)
+    fill: var(--neutral-100)
 }
 
 .ui-controls {
@@ -318,9 +322,17 @@ body {
 	right: 3.5rem;
 }
 
+#main-content {
+	padding: 2rem;
+}
 @media (min-width: 48em) {
 	.ui-controls {
 		right: 1.15rem;
+	}
+
+	.admin-interface {
+		display: grid;
+		grid-template-columns: 1fr auto;
 	}
 
 	#main-content {
@@ -329,5 +341,7 @@ body {
 	}
 
 }
+
+
 
 </style>
