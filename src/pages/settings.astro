@@ -1,0 +1,107 @@
+---
+import Base from "../layouts/Base.astro"
+// import { pSql } from "../utils/constant"
+import { Icon } from "astro-icon/components"
+import { Notification } from "accessible-astro-components"
+
+const user = Astro.locals.authUser
+
+// const [userProfile] = await pSql`SELECT * FROM "user" WHERE id=${user.id}`
+// console.log(userProfile, "user")
+---
+
+<Base title={`Settings ${user.name}`}>
+
+
+  <div class="settings-ui">
+    <h1>{user.name}'s Settings</h1><br>
+    <p>Update your account preferences and information</p><br>
+
+    <div class="tab">
+      <button class="tab-links">Account</button>
+      <button class="tab-links">Danger</button>
+    </div>
+    <br>
+    <div id="Account" class="tabcontent">
+      <span onclick="this.parentElement.style.display='none'" class="topright">&times</span>
+      <h3>Account</h3>
+
+      <!-- TODO Email, Password, Username Update form -->
+    </div>
+    <div id="Danger" class="tabcontent">
+      <span onclick="this.parentElement.style.display='none'" class="topright">&times</span><br><br>
+      <Notification 
+        type="warning"  
+        ariaLive="assertive"
+        role="alert"
+      >
+        <Icon name="danger" class="icon-danger"/><p><strong>Danger: </strong> There is no undo button for what you are about to do!</p>
+      </Notification><br>
+
+      <h5>delete account</h5>
+      <h4>Deletes your account and all data connected to it.</h4>
+      <h4>You can't undo this action!</h4>
+      <!-- TODO Delete User Form -->
+      <!-- TODO Delete User Form Confirmation Form -->
+      <button class="danger-btn">Delete Account</button>
+    </div>
+  </div>
+</Base>
+
+<script>
+import { GritError } from "../utils/error";
+const authCookie = window
+console.log({authCookie})
+
+const tabContent = document.querySelectorAll(".tabcontent")
+if (!tabContent) throw new GritError("Tab Contents not found", "UI_FAILURE")
+const tabLinks = document.querySelectorAll(".tab-links");
+if (!tabLinks) throw new GritError("Tab Links not found", "UI_FAILURE")
+
+function removeContentDisplay() {
+  tabContent.forEach((tab) => {
+    (tab as HTMLElement).style.display = 'none'
+  })
+}
+
+function removeAllActive() {
+  tabLinks.forEach((link) => {
+    link.classList.remove('active-tab')
+  })
+}
+
+tabLinks.forEach((link) => {
+  link.addEventListener("click", (event) => {
+    removeContentDisplay();
+    removeAllActive();
+
+    const activeTab = event.target as HTMLElement | null
+    if (!activeTab) throw new GritError("Active Tab not found", "UI_FAILURE")
+    const activeContent = document.getElementById(activeTab.textContent || '') as HTMLElement | null
+    if (!activeContent) throw new GritError("Active Content not found", "UI_FAILURE")
+
+    activeTab.classList.add('active-tab');
+    activeContent.style.display = "block"
+  })
+})
+
+removeContentDisplay();
+removeAllActive();
+
+</script>  
+
+<style >
+.topright {
+  float: right;
+  cursor: pointer;
+  font-size: 2rem;
+}
+
+.topright:hover {
+  color: var(--action-color);
+}
+
+.icon-danger {
+  fill: var(--warning-500);
+}
+</style>

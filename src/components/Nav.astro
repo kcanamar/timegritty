@@ -2,6 +2,7 @@
 import ResponsiveToggle from './ResponsiveToggle.astro'
 import Logout from '../components/Forms/Logout.astro'
 import { Icon } from 'astro-icon/components';
+import { Media } from 'accessible-astro-components';
 
 const user = Astro.locals?.authUser?.name
 console.log(user, "nav component")
@@ -12,7 +13,7 @@ console.log(user, "nav component")
 			<ul>
 				<li class="brand-logo">
 					<!-- await import('brandLogo.svg') -->
-					 <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCC5n1EjQ68IDMLchPOgi5FiG8iazjBBaI4gy_jwzXack0kiksri-yIUqgohhc4Pum8R4&usqp=CAU" alt="TimeGritty Logo">
+					 <Media src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCC5n1EjQ68IDMLchPOgi5FiG8iazjBBaI4gy_jwzXack0kiksri-yIUqgohhc4Pum8R4&usqp=CAU" alt="TimeGritty Logo">
 					<span class="sr-only">TimeGritty</span>
 				</li>
 				<li class="menu-item">
@@ -48,7 +49,7 @@ console.log(user, "nav component")
 	<div class="container mobile-menu">
 		<a href="/">
 			<!-- await import('logo.svg').default-->
-			<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCC5n1EjQ68IDMLchPOgi5FiG8iazjBBaI4gy_jwzXack0kiksri-yIUqgohhc4Pum8R4&usqp=CAU" height="32px" alt="TimeGritty Logo">
+			<Media class="logo-mobile" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCC5n1EjQ68IDMLchPOgi5FiG8iazjBBaI4gy_jwzXack0kiksri-yIUqgohhc4Pum8R4&usqp=CAU" alt="TimeGritty Logo">
 		</a>
 		<ResponsiveToggle />
 		<nav>
@@ -189,25 +190,28 @@ mainMenu && mainMenu?.addEventListener('keydown', event => {
 		const focusableElement = targetItem?.querySelector('a, button, input') as HTMLElement | null
 		focusableElement?.focus()
 	}
-	})
+})
 
-	toggleExpandedView?.addEventListener('click', () => {
+toggleExpandedView?.addEventListener('click', () => {
 		mainNav?.classList?.contains('is-expanded')
 		? collapseMenu()
 		: expandMenu()
-	})
+})
 
-	window.addEventListener('resize', checkViewportWidth)
+window.addEventListener('resize', checkViewportWidth)
 
-	setActiveMenuItem()
-	checkViewportWidth()
+setActiveMenuItem()
+checkViewportWidth()
 
-	if (isMenuExpanded === 'true') {
-		expandMenu()
-	}
+if (isMenuExpanded === 'true') {
+	expandMenu()
+}
 </script>
 
 <style is:global>
+.logo-mobile {
+	height: 32px;
+}
 .icon-hidden {
 	display: none;
 }
