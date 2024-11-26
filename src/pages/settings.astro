@@ -1,21 +1,23 @@
 ---
 import Base from "../layouts/Base.astro"
-// import { pSql } from "../utils/constant"
+import { pSql } from "../utils/constant"
 import { Icon } from "astro-icon/components"
 import { Notification } from "accessible-astro-components"
 
 const user = Astro.locals.authUser
 
-// const [userProfile] = await pSql`SELECT * FROM "user" WHERE id=${user.id}`
-// console.log(userProfile, "user")
+const [userProfile] = await pSql`SELECT * FROM "user" WHERE id=${user.id}`
+console.log(userProfile, "user")
+
+console.log(Astro.request, "request")
 ---
 
-<Base title={`Settings ${user.name}`}>
+<Base title={`Account Settings`}>
 
 
   <div class="settings-ui">
-    <h1>{user.name}'s Settings</h1><br>
-    <p>Update your account preferences and information</p><br>
+    <h1>Account Settings</h1><br>
+    <p>Update your account information</p><br>
 
     <div class="tab">
       <button class="tab-links">Account</button>
@@ -27,6 +29,52 @@ const user = Astro.locals.authUser
       <h3>Account</h3>
 
       <!-- TODO Email, Password, Username Update form -->
+      <dialog id="name-dialog">
+        <form action="/api/user/name" method="dialog" id="update-name" class="account-setting">
+          <label for="name">Update account name</label>
+          <input type="text" name="nameUpdate" id="name" autocomplete="username" required value={userProfile.name}>
+          <div id="name-error" class="modal-error-msg">
+          <p><strong><em>You must change your name.</em></strong></p>
+          </div>
+          <button id="name-cancel" class="cancel-modal-btn" type="reset">Cancel</button>
+          <input type="submit" id="name-submit" class="confirm-modal-btn" value="Confirm" disabled>
+        </form>
+      </dialog>
+
+      <div>
+        <h3>Update account name</h3>
+        <p>Change your account name. <em>You can only do this once every 30 days.</em></p>
+        <button id="name-details">Update account name</button>
+      </div>
+
+      <form action="" method="post" class="account-setting">
+        <h3>Update account email</h3>
+        <p>Change your email address here. <em>You can only do this once every 90 days!</em></p>
+        <div>
+          <label for="email">Update account email</label>
+          <input type="email" name="emailUpdate" id="email" autocomplete="email" required value={userProfile.email} >
+        </div>
+        <input type="submit" value="Update Email">
+      </form>  
+      <form action="" method="post" class="account-setting">
+        <div>
+          <h3>Update account password</h3>
+          <p>Change your password here to make sure that you have good password hygiene. <em>We recommend changing your password once a year.</em></p>
+        </div>
+        <div>
+          <div>
+            <label for="password">Current Password</label>
+            <input type="password" name="currentPassword" id="password" autocomplete="current-password" required>
+          </div>
+          <div>
+            <label for="new-password">New Password</label>
+            <input type="password" name="newPassword" id="new-password" autocomplete="new-password" aria-autocomplete="inline" required>
+          </div>
+          <input type="submit" value="Update Password">
+        </div>
+      </form>
+      
+        
     </div>
     <div id="Danger" class="tabcontent">
       <span onclick="this.parentElement.style.display='none'" class="topright">&times</span><br><br>
@@ -50,9 +98,7 @@ const user = Astro.locals.authUser
 
 <script>
 import { GritError } from "../utils/error";
-const authCookie = window
-console.log({authCookie})
-
+// ---------------- Tabs
 const tabContent = document.querySelectorAll(".tabcontent")
 if (!tabContent) throw new GritError("Tab Contents not found", "UI_FAILURE")
 const tabLinks = document.querySelectorAll(".tab-links");
@@ -85,12 +131,138 @@ tabLinks.forEach((link) => {
   })
 })
 
-removeContentDisplay();
-removeAllActive();
+// ---------------- Modals
+const updateNameBtn = document.querySelector("#name-details") as HTMLElement | null
+if (!updateNameBtn) throw new GritError("Name modal button not found", "UI_FAILURE")
+const cancelModalBtns = document.querySelectorAll(".cancel-modal-btn")
+if (!cancelModalBtns) throw new GritError("Cancel modal buttons not found", "UI_FAILURE")
+const nameDialog = document.querySelector("#name-dialog") as HTMLDialogElement | null
+if (!nameDialog) throw new GritError("Name Dialog is having issues", "UI_FAILURE")
 
+function openCheck(dialog: HTMLDialogElement) {
+  if (dialog.open) {
+    console.log("Dialog open")
+  } else {
+    console.log("Dialog closed")
+  }
+}
+
+updateNameBtn.addEventListener("click", () => {
+  nameDialog.showModal();
+  openCheck(nameDialog);
+})
+
+cancelModalBtns.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    nameDialog.close("This is the end")
+    openCheck(nameDialog)
+  })
+})
+
+
+// ---------------- Forms Submissions
+const nameForm = document.querySelector("#update-name") as HTMLFormElement | null
+if (!nameForm) throw new GritError("Name form cannot be found", "UI_FAILURE")
+const nameInput = document.querySelector("#name") as HTMLInputElement | null
+if (!nameInput) throw new GritError("Name input cannot be found", "UI_FAILURE")
+const dialogErrMsgs = document.querySelectorAll('.modal-error-msg')
+if (!dialogErrMsgs) throw new GritError("Cannot find the dialog error messages", "UI_FAILURE")
+const nameSubmit = document.querySelector('#name-submit') as HTMLInputElement | null
+if (!nameSubmit) throw new GritError("Cannot find the submit button for the name change form", "UI_FAILURE")
+
+function validateSubmission(event: Event) {
+  let isValid = true;
+
+  dialogErrMsgs.forEach(error => {
+    if (error instanceof HTMLElement) {
+      error.style.display = 'none';
+    }
+  });
+
+  if(!nameInput?.checkValidity()) {
+    isValid = false;
+    const errorElement = document.getElementById(`${(event.target as HTMLElement)?.id}-error`);
+    if (errorElement instanceof HTMLElement) {
+      errorElement.style.display = 'block';
+    }
+  }
+
+  if ((event.target as HTMLInputElement)?.value === nameInput?.defaultValue || (event.target as HTMLInputElement)?.value === "" ) {
+    isValid = false;
+    const errorElement = document.getElementById(`${(event.target as HTMLElement)?.id}-error`);
+    if (errorElement instanceof HTMLElement) {
+      errorElement.style.display = 'block';
+    }
+  }
+
+  if (nameSubmit) {
+    nameSubmit.disabled = !isValid;
+  }
+
+}
+nameInput.addEventListener('input', validateSubmission);
+nameInput.addEventListener('blur', validateSubmission);
+
+nameForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  nameInput.blur();
+
+  if (nameForm.checkValidity()) {
+    console.log('Form winning')
+    updatedUser.updated = false;
+    try {
+      let updatedUserRequest = await fetch(`/api/user/name`, {
+        method: "PUT",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: (nameForm.elements.namedItem('name') as HTMLInputElement).value
+        })
+      })
+      const freshData = await updatedUserRequest.json()
+      updatedUser.updated = true;
+      updatedUser.name = freshData.user.name 
+      updateUserInformation()
+      validateSubmission(event)
+      nameDialog.close("Successful Submission")
+      openCheck(nameDialog)
+    } catch (error) {
+      throw new GritError('Something went wrong with the fetch to put the new name', "API_ERROR")
+    }
+  } else {
+    validateSubmission(event);
+  }
+})
+
+// ---------------- Handle Updated User
+type updatedUser = {
+  name: String | null,
+  updated: Boolean,
+
+}
+
+let updatedUser: updatedUser = { name:null,updated: false};
+
+function updateUserInformation () {
+  if (nameInput && updatedUser.updated) {
+    nameInput.value = String(updatedUser.name);
+    nameInput.defaultValue = String(updatedUser.name);
+
+    if(nameSubmit) {
+      nameSubmit.disabled = !updatedUser.updated
+    }
+
+    console.log({nameInput: nameInput.value, updatedUser})
+  }
+}
 </script>  
 
-<style >
+<style is:global>
+
+#Danger {
+  display:none;
+}
 .topright {
   float: right;
   cursor: pointer;
@@ -103,5 +275,83 @@ removeAllActive();
 
 .icon-danger {
   fill: var(--warning-500);
+}
+
+.darkmode .account-setting input {
+  background-color: transparent;
+}
+
+.account-setting {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+
+.account-setting div {
+  display: flex;
+  flex-direction: column;
+}
+
+.account-setting input[type='submit'],
+.account-setting .modal-open-btn {
+  border-radius: 0.2rem;
+}
+
+#update-name {
+  border: red 2px solid;
+  height: 30svh;
+  justify-content: space-evenly;
+  aspect-ratio: 1/1;
+}
+
+#name-cancel {
+  background: none;
+	color: var(--error-500);
+	border: none;
+	padding: 0.3rem;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+  text-align: center;
+  border-radius: .5rem;
+}
+
+#name-cancel:focus, #name-cancel:hover {
+  outline: var(--error-500) 2px solid;
+  background-color: var(--error-800);
+  color: var(--neutral-300);
+}
+
+.modal-error-msg {
+  color: var(-error-500);
+  margin-top: 0.25rem;
+  display: none;
+}
+
+#name-submit {
+  opacity: 0.5;
+  padding: 0.3rem;
+  cursor: not-allowed;
+  border: none;
+}
+
+#name-submit:valid {
+  opacity: 1;
+  cursor: pointer;
+  outline: var(--success-500) 2px solid;
+  background-color: var(--success-200);
+}
+
+#name-submit:valid:hover {
+
+}
+/* * ---------------- Media Queries */
+@media (min-width: 48em) {
+  .account-setting {
+    justify-content: space-between;
+  }
 }
 </style>
