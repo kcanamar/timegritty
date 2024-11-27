@@ -1,12 +1,8 @@
-import { SignJWT } from "jose/jwt/sign";
 import type { APIRoute } from "astro";
 import bcrypt from "bcryptjs";
-import { TOKEN } from "../../utils/constant.ts";
-import { neon } from "@neondatabase/serverless";
+import { TOKEN, pSql } from "../../utils/constant.ts";
 import { getErrorCode, GritError } from "../../utils/error.ts";
-
-const secret = new TextEncoder().encode(import.meta.env.JWT_SECRET_KEY);
-const sql = neon(import.meta.env.DATABASE_URL)
+import { createJWToken } from "../../lib/auth.ts";
 
 export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   try {	
@@ -18,7 +14,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
 			password: data.get("password"),
 		}
 		const hashedPassword = bcrypt.hashSync(String(formData.password))
-		const userCheck = await sql`SELECT * FROM "user" WHERE email=${formData.email}`
+		const userCheck = await pSql`SELECT * FROM "user" WHERE email=${formData.email}`
 		if (userCheck[0]) {
 			try {
 				throw new GritError('User Already Exists', 'USER_EXISTS', 409)
@@ -34,20 +30,15 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
 				})
 			}
 		}
-		const newUser = await sql`
+		const newUser = await pSql`
 			INSERT INTO "user"(id, name, email, password_hash) 
 			VALUES (uuid_generate_v4(), ${formData.name}, ${formData.email}, ${hashedPassword})
 			RETURNING *
 		`
 		// Send Verification email
 		// TODO Resend for the email service, this will count as a transactional email.
-		const token = await new SignJWT({})
-			.setProtectedHeader({ alg: 'HS256' })
-			.setIssuedAt()
-			.setExpirationTime("2h")
-			.sign(secret)
-		// Insert the newUser in to the session table with the matching token
-		await sql`
+		const token = await createJWToken("2d")
+		await pSql`
 			INSERT INTO user_sessions (user_id, auth_token)
 			VALUES (${newUser[0].id}, ${token})
 		`

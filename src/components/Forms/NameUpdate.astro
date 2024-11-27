@@ -1,0 +1,129 @@
+---
+const  userProfile  = Astro.props.userProfile;
+---
+<div class="setting-name-ui">
+  <div class="setting-description">
+    <h3>Update account name</h3>
+    <p>Change your account name. <strong><em>You can only do this once every 30 days.</em></strong></p>
+  </div>
+  <form action="/api/user/name" method="POST" id="update-name" class="setting-form">
+    <label for="name">New name? Sweet.</label>
+    <input type="text" name="nameUpdate" id="name" autocomplete="username" required value={userProfile.name} maxlength="32">
+    <div id="name-error" class="modal-error-msg">
+      <strong><em>You must change your name.</em></strong>
+    </div>
+    <input type="submit" id="name-submit" class="confirm-modal-btn" value="Confirm" disabled>
+  </form>
+</div>
+<script>
+// ---------------- Forms Submissions
+import { GritError } from "../../utils/error"
+const nameForm = document.querySelector("#update-name") as HTMLFormElement | null
+if (!nameForm) throw new GritError("Name form cannot be found", "UI_FAILURE")
+const nameInput = document.querySelector("#name") as HTMLInputElement | null
+if (!nameInput) throw new GritError("Name input cannot be found", "UI_FAILURE")
+const dialogErrMsgs = document.querySelectorAll('.modal-error-msg')
+if (!dialogErrMsgs) throw new GritError("Cannot find the dialog error messages", "UI_FAILURE")
+const nameSubmit = document.querySelector('#name-submit') as HTMLInputElement | null
+if (!nameSubmit) throw new GritError("Cannot find the submit button for the name change form", "UI_FAILURE")
+
+function validateSubmission(event: Event) {
+  let isValid = true;
+
+  dialogErrMsgs.forEach(error => {
+    if (error instanceof HTMLElement) {
+      error.style.display = 'none';
+    }
+  });
+
+  if ((event.target as HTMLInputElement)?.value === nameInput?.defaultValue || (event.target as HTMLInputElement)?.value === "" ) {
+    isValid = false;
+    const errorElement = document.getElementById(`${(event.target as HTMLElement)?.id}-error`);
+    if (errorElement instanceof HTMLElement && nameSubmit && nameInput) {
+      errorElement.style.display = 'block';
+      nameSubmit.style.outline = 'hsl(0, 100%, 80%) 2px solid';
+      nameInput.style.outline = 'hsl(0, 100%, 80%) 2px solid';
+    }
+  }
+
+  if (nameSubmit && nameInput) {
+    nameSubmit.disabled = !isValid;
+    nameSubmit.style.outline = 'none';
+    nameInput.style.outline = 'none';
+  }
+
+}
+nameInput.addEventListener('input', validateSubmission);
+nameInput.addEventListener('blur', validateSubmission);
+
+</script>
+<style is:global>
+
+.darkmode .setting-form input[type='text'] {
+  background-color: transparent;
+  padding: .3rem;
+  border-radius: var(--radius-small);
+}
+
+.setting-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+
+.setting-form div {
+  display: flex;
+  flex-direction: column;
+}
+
+.setting-form input[type='submit'],
+.setting-form .modal-open-btn {
+  border-radius: var(--radius-small);
+}
+
+.setting-form .modal-error-msg {
+  color: var(--error-300);
+  display: none;
+}
+
+#name {
+  padding: 0.4rem;
+}
+
+#name-submit {
+  opacity: 0.5;
+  padding: 0.3rem;
+  cursor: not-allowed;
+  border: none;
+}
+
+#name-submit:valid {
+  opacity: .7;
+  background-color: var(--success-500);
+  color: var(--neutral-100);
+}
+
+#name-submit:valid:hover,
+#name-submit:valid:focus {
+  opacity: 1;
+  cursor: pointer;
+  background-color: var(--success-700);
+  color: var(--neutral-100);
+}
+
+@media (min-width: 48em) {
+  .setting-name-ui {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+  }
+  .setting-description {
+
+  }
+  .setting-form {
+
+  }
+}
+</style>
