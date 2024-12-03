@@ -45,7 +45,7 @@ export const onRequest = defineMiddleware(async ({cookies, url, locals}, next) =
       try {
 
         const session = await sql`SELECT * FROM user_sessions WHERE auth_token = ${token?.value}`
-        const user = await sql`SELECT u.name, u.id FROM "user" u WHERE u.id = ${session[0].user_id}`;
+        const user = await sql`SELECT u.name, u.id, u.password_hash FROM "user" u WHERE u.id = ${session[0].user_id}`;
         if (user) {
           // provide the current user.id to locals
           locals.authUser = user[0]

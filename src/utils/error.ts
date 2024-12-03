@@ -18,7 +18,8 @@ export function getErrorCode(error: string): string {
 		'User Already Exists': 'USER_EXISTS',
                 'Invalid Credentials': 'INVALID_CREDS',
 		'Error with JWT': 'JWT_COOKIE',
-                'Not Authorized': 'UNAUTHORIZED'
+                'Not Authorized': 'UNAUTHORIZED',
+								'Neon Issue': 'NEON_CRIT'
 	}
 	return errMap[error] || 'UNKNOWN_ERROR'
 }

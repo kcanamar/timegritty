@@ -1,5 +1,5 @@
 ---
-const  userProfile  = Astro.props.userProfile;
+const  userName  = Astro.props.userName;
 ---
 <div class="setting-name-ui">
   <div class="setting-description">
@@ -8,7 +8,7 @@ const  userProfile  = Astro.props.userProfile;
   </div>
   <form action="/api/user/name" method="POST" id="update-name" class="setting-form">
     <label for="name">New name? Sweet.</label>
-    <input type="text" name="nameUpdate" id="name" autocomplete="username" required value={userProfile.name} maxlength="32">
+    <input type="text" name="nameUpdate" id="name" autocomplete="username" required value={userName} maxlength="32">
     <div id="name-error" class="modal-error-msg">
       <strong><em>We cannot call you the same thing twice.</em></strong>
     </div>

@@ -1,14 +1,11 @@
 ---
 import Base from "../layouts/Base.astro"
-import { pSql } from "../utils/constant"
 import { Icon } from "astro-icon/components"
 import { Notification } from "accessible-astro-components"
 import NameUpdate from "../components/Forms/NameUpdate.astro"
 import PasswordUpdate from "../components/Forms/PasswordUpdate.astro"
 
 const user = Astro.locals.authUser
-
-const [userProfile] = await pSql`SELECT * FROM "user" WHERE id=${user.id}`
 ---
 
 <Base title={`Account Settings`}>
@@ -29,8 +26,8 @@ const [userProfile] = await pSql`SELECT * FROM "user" WHERE id=${user.id}`
         <span onclick="this.parentElement.style.display='none'" class="topright">&times</span>
       </div>
       <!-- TODO Email, Password, Username Update form -->
-      <NameUpdate userProfile={userProfile} />
-      <PasswordUpdate userProfile={userProfile}/>
+      <NameUpdate userName={user.name} />
+      <PasswordUpdate />
     </div>
     <div id="Danger" class="tabcontent">
       <span onclick="this.parentElement.style.display='none'" class="topright">&times</span><br><br>
