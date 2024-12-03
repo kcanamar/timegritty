@@ -10,7 +10,7 @@ const  userProfile  = Astro.props.userProfile;
     <label for="name">New name? Sweet.</label>
     <input type="text" name="nameUpdate" id="name" autocomplete="username" required value={userProfile.name} maxlength="32">
     <div id="name-error" class="modal-error-msg">
-      <strong><em>You must change your name.</em></strong>
+      <strong><em>We cannot call you the same thing twice.</em></strong>
     </div>
     <input type="submit" id="name-submit" class="confirm-modal-btn" value="Confirm" disabled>
   </form>
@@ -111,6 +111,15 @@ nameInput.addEventListener('blur', validateSubmission);
   cursor: pointer;
   background-color: var(--success-700);
   color: var(--neutral-100);
+}
+
+.setting-description p, .setting-description {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.setting-name-ui strong em {
+  color: var(--error-500);
 }
 
 @media (min-width: 48em) {

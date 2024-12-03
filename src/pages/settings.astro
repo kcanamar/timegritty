@@ -4,13 +4,11 @@ import { pSql } from "../utils/constant"
 import { Icon } from "astro-icon/components"
 import { Notification } from "accessible-astro-components"
 import NameUpdate from "../components/Forms/NameUpdate.astro"
+import PasswordUpdate from "../components/Forms/PasswordUpdate.astro"
 
 const user = Astro.locals.authUser
 
 const [userProfile] = await pSql`SELECT * FROM "user" WHERE id=${user.id}`
-console.log(userProfile, "user")
-
-console.log(Astro.request, "request")
 ---
 
 <Base title={`Account Settings`}>
@@ -26,10 +24,13 @@ console.log(Astro.request, "request")
     </div>
     <br>
     <div id="Account" class="tabcontent">
-      <span onclick="this.parentElement.style.display='none'" class="topright">&times</span>
-      <h3>Account</h3>
+      <div class="tab-header">
+        <h3>Account</h3>
+        <span onclick="this.parentElement.style.display='none'" class="topright">&times</span>
+      </div>
       <!-- TODO Email, Password, Username Update form -->
       <NameUpdate userProfile={userProfile} />
+      <PasswordUpdate userProfile={userProfile}/>
     </div>
     <div id="Danger" class="tabcontent">
       <span onclick="this.parentElement.style.display='none'" class="topright">&times</span><br><br>
@@ -93,8 +94,12 @@ tabLinks.forEach((link) => {
 #Danger {
   display:none;
 }
+
+.tab-header {
+  display: flex;
+  justify-content: space-between;
+}
 .topright {
-  float: right;
   cursor: pointer;
   font-size: 2rem;
 }
@@ -112,7 +117,7 @@ tabLinks.forEach((link) => {
   color: var(--neutral-100);
 }
 
-/* * ---------------- Media Queries */1
+/* * ---------------- Media Queries */
 @media (min-width: 48em) {
   .account-setting {
     justify-content: space-between;
