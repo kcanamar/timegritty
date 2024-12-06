@@ -21,7 +21,7 @@ export const createJWToken = async (duration: string) => {
   .sign(secret)
 }
 
-export const validatePassword = async (password: string) :Promise<Boolean> => {
+// export const validatePassword = async (password: string) :Promise<Boolean> => {
   
-  return false
-}
+//   return false
+// }

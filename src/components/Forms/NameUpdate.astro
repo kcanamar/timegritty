@@ -3,7 +3,6 @@ const  userName  = Astro.props.userName;
 ---
 <div class="setting-name-ui">
   <div class="setting-description">
-    <h3>Update account name</h3>
     <p>Change your account name. <strong><em>You can only do this once every 30 days.</em></strong></p>
   </div>
   <form action="/api/user/name" method="POST" id="update-name" class="setting-form">
@@ -36,20 +35,22 @@ function validateSubmission(event: Event) {
     }
   });
 
-  if ((event.target as HTMLInputElement)?.value === nameInput?.defaultValue || (event.target as HTMLInputElement)?.value === "" ) {
+  if ((event.target as HTMLInputElement)?.value === nameInput?.defaultValue) {
     isValid = false;
+    console.log(isValid)
     const errorElement = document.getElementById(`${(event.target as HTMLElement)?.id}-error`);
     if (errorElement instanceof HTMLElement && nameSubmit && nameInput) {
       errorElement.style.display = 'block';
-      nameSubmit.style.outline = 'hsl(0, 100%, 80%) 2px solid';
-      nameInput.style.outline = 'hsl(0, 100%, 80%) 2px solid';
+      nameSubmit.disabled = !isValid;
+      nameSubmit.classList.add("error-msg-outline")
+      nameInput.classList.add("error-msg-outline")
     }
   }
 
-  if (nameSubmit && nameInput) {
+  if (isValid && nameSubmit && nameInput) {
     nameSubmit.disabled = !isValid;
-    nameSubmit.style.outline = 'none';
-    nameInput.style.outline = 'none';
+    nameSubmit.classList.remove("error-msg-outline")
+    nameInput.classList.remove("error-msg-outline")
   }
 
 }
@@ -58,7 +59,9 @@ nameInput.addEventListener('blur', validateSubmission);
 
 </script>
 <style is:global>
-
+.error-msg-outline {
+  outline: var(--error-300) 2px solid
+} 
 .darkmode .setting-form input[type='text'] {
   background-color: transparent;
   padding: .3rem;
@@ -72,14 +75,7 @@ nameInput.addEventListener('blur', validateSubmission);
   padding: 1rem;
 }
 
-
-.setting-form div {
-  display: flex;
-  flex-direction: column;
-}
-
-.setting-form input[type='submit'],
-.setting-form .modal-open-btn {
+.setting-form input[type='submit'] {
   border-radius: var(--radius-small);
 }
 
@@ -92,7 +88,8 @@ nameInput.addEventListener('blur', validateSubmission);
   padding: 0.4rem;
 }
 
-#name-submit {
+#name-submit, 
+#destroy-submit {
   opacity: 0.5;
   padding: 0.3rem;
   cursor: not-allowed;
@@ -103,20 +100,20 @@ nameInput.addEventListener('blur', validateSubmission);
   opacity: .7;
   background-color: var(--success-500);
   color: var(--neutral-100);
+  cursor: pointer;
 }
 
 #name-submit:valid:hover,
-#name-submit:valid:focus {
+#name-submit:valid:focus, 
+#destroy-submit:valid:hover,
+#destroy-submit:valid:focus {
   opacity: 1;
-  cursor: pointer;
   background-color: var(--success-700);
   color: var(--neutral-100);
 }
 
 .setting-description p, .setting-description {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  padding-top: 1rem;
 }
 .setting-name-ui strong em {
   color: var(--error-500);
@@ -132,7 +129,7 @@ nameInput.addEventListener('blur', validateSubmission);
 
   }
   .setting-form {
-
+    padding: 3rem;
   }
 }
 </style>

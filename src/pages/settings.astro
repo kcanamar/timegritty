@@ -1,11 +1,14 @@
 ---
 import Base from "../layouts/Base.astro"
-import { Icon } from "astro-icon/components"
-import { Notification } from "accessible-astro-components"
 import NameUpdate from "../components/Forms/NameUpdate.astro"
 import PasswordUpdate from "../components/Forms/PasswordUpdate.astro"
+import DestroyAccount from "../components/Forms/DestroyAccount.astro"
+import { Notification } from "accessible-astro-components"
+import { Icon } from "astro-icon/components"
 
 const user = Astro.locals.authUser
+const passwordErrMsg = Astro.url.searchParams.get('code') === 'INVALID_CREDS'
+const successMessage = Astro.url.searchParams.get('success')
 ---
 
 <Base title={`Account Settings`}>
@@ -13,38 +16,25 @@ const user = Astro.locals.authUser
 
   <div class="settings-ui">
     <h1>Account Settings</h1><br>
-    <p>Update your account information</p><br>
-
     <div class="tab">
       <button class="tab-links active-tab">Account</button>
       <button class="tab-links">Danger</button>
     </div>
     <br>
+    {successMessage &&
+    <Notification type="success" ariaLive="assertive" role="alert">
+      <Icon name="success" class="icon-success"/>
+      Successful update of your {successMessage}
+    </Notification>
+    }
     <div id="Account" class="tabcontent">
-      <div class="tab-header">
-        <h3>Account</h3>
-        <span onclick="this.parentElement.style.display='none'" class="topright">&times</span>
-      </div>
-      <!-- TODO Email, Password, Username Update form -->
+      <!-- TODO Notification's from the server -->
+      <!-- TODO Email Update form -->
       <NameUpdate userName={user.name} />
-      <PasswordUpdate />
+      <PasswordUpdate passwordErrMsg={passwordErrMsg}/>
     </div>
     <div id="Danger" class="tabcontent">
-      <span onclick="this.parentElement.style.display='none'" class="topright">&times</span><br><br>
-      <Notification 
-        type="warning"  
-        ariaLive="assertive"
-        role="alert"
-      >
-        <Icon name="danger" class="icon-danger"/><p><strong>Danger: </strong> There is no undo button for what you are about to do!</p>
-      </Notification><br>
-
-      <h5>delete account</h5>
-      <h4>Deletes your account and all data connected to it.</h4>
-      <h4>You can't undo this action!</h4>
-      <!-- TODO Delete User Form -->
-      <!-- TODO Delete User Form Confirmation Form -->
-      <button class="danger-btn">Delete Account</button>
+      <DestroyAccount user={user}/>
     </div>
   </div>
 </Base>
@@ -61,6 +51,13 @@ function removeContentDisplay() {
   tabContent.forEach((tab) => {
     (tab as HTMLElement).style.display = 'none'
   })
+  
+  // update the browser url removing all queries without reloading the page
+  window.history.pushState({}, document.title, window.location.origin + window.location.pathname);
+  const settingNotification = document.querySelector(".type-success") as HTMLElement
+  if(settingNotification) {
+    settingNotification.style.display = 'none'
+  }
 }
 
 function removeAllActive() {
@@ -105,6 +102,9 @@ tabLinks.forEach((link) => {
   color: var(--action-color);
 }
 
+.icon-success g{
+  stroke: var(--success-500);
+}
 .icon-danger {
   fill: var(--warning-500);
 }
