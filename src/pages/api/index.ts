@@ -1,6 +1,6 @@
 // NEON CONFIGURATION
-import type { APIRoute } from "astro";
+import type { APIRoute } from 'astro'
 
-export const GET:APIRoute = async ({ redirect }) => {
-	return redirect('/404')
+export const GET: APIRoute = async ({ redirect }) => {
+    return redirect('/404')
 }

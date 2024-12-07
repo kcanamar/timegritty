@@ -1,26 +1,30 @@
 ---
-import Base from "../layouts/Base.astro"
-import RegisterForm from "../components/Forms/Register.astro"
-import LoginForm from "../components/Forms/Login.astro"
-import { errMessages } from "../utils/error.ts"
+import Base from '../layouts/Base.astro'
+import LoginForm from '../components/Forms/Login.astro'
+import { errMessages } from '../utils/error.ts'
 
 const code = Astro.url.searchParams.get('code') || 'UNKNOWN_ERROR'
 const errorInfo = errMessages[code]
-
 ---
 
 <Base title={code}>
-	{(errorInfo && <div>
-		<h1>{errorInfo.title}</h1><br>
-		<p>{errorInfo.description}</p><br>
-		{code === "USER_EXISTS" && (
-			<RegisterForm/>
-			<a href="/login">Follow me to Login.</a>
-		)}
-		{code === "UNAUTHORIZED" && (
-			<LoginForm/>
-			<a href="/signup">Follow me to Sign Up.</a>
-		)}
-		<a href="/">Back to Home</a>
-	</div>)}
+    {
+        errorInfo && (
+            <div>
+                <h1>{errorInfo.title}</h1>
+                <br />
+                <p>{errorInfo.description}</p>
+                <br />
+                {(code === 'UNAUTHORIZED' ||
+                    code === 'INVALID_CREDS' ||
+                    code === 'USER_EXISTS') && (
+                    <>
+                        <LoginForm />
+                        <a href="/signup">Follow me to Sign Up.</a>
+                    </>
+                )}
+                <a href="/">Back to Home</a>
+            </div>
+        )
+    }
 </Base>

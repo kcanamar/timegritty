@@ -1,16 +1,33 @@
 ---
+
 ---
+
 <h1>Login</h1>
 <form action="/api/login" method="POST">
     <label for="login-email">Email</label>
-    <input type="email" name="email" id="login-email" required autocomplete="email" />
+    <input
+        type="email"
+        name="email"
+        id="login-email"
+        required
+        autocomplete="email"
+    />
     <label for="login-password">Password</label>
-    <input type="password" name="password" id="login-password" required autocomplete="current-password" minlength="6" maxlength="32" />
+    <input
+        type="password"
+        name="password"
+        id="login-password"
+        required
+        autocomplete="current-password"
+        minlength="6"
+        maxlength="32"
+    />
     <button>Submit</button>
 </form>
 
 <style is:global>
-.darkmode #login-email, .darkmode #login-password {
-    background-color: var(--neutral-800);
-}
+    .darkmode #login-email,
+    .darkmode #login-password {
+        background-color: var(--neutral-800);
+    }
 </style>

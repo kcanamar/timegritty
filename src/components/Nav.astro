@@ -1,477 +1,519 @@
 ---
 import ResponsiveToggle from './ResponsiveToggle.astro'
 import Logout from '../components/Forms/Logout.astro'
-import { Icon } from 'astro-icon/components';
-import { Media } from 'accessible-astro-components';
+import { Icon } from 'astro-icon/components'
+import { Media } from 'accessible-astro-components'
 
 const user = Astro.locals?.authUser?.name
+const layout = Astro.props
 ---
+
 <div id="main-nav" class="is-desktop">
-	<div class="desktop-menu">
-		<nav>
-			<ul>
-				<li class="brand-logo">
-					<!-- await import('brandLogo.svg') -->
-					 <Media src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCC5n1EjQ68IDMLchPOgi5FiG8iazjBBaI4gy_jwzXack0kiksri-yIUqgohhc4Pum8R4&usqp=CAU" alt="TimeGritty Logo">
-					<span class="sr-only">TimeGritty</span>
-				</li>
-				<li class="menu-item">
-					<button class="toggle-expanded-view" aria-expanded="false">
-						<Icon name="double-right-chevron" class="icon-right"/>
-						<Icon name="double-left-chevron" class="icon-left icon-hidden"/>
-						<span class="sr-only">Expand Menu</span>
-					</button>
-				</li>
+    <div class="desktop-menu">
+        <nav>
+            <ul>
+                <li class="brand-logo">
+                    <!-- await import('brandLogo.svg') -->
+                    <Media
+                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCC5n1EjQ68IDMLchPOgi5FiG8iazjBBaI4gy_jwzXack0kiksri-yIUqgohhc4Pum8R4&usqp=CAU"
+                        alt="TimeGritty Logo"
+                    >
+                        <span class="sr-only">TimeGritty</span>
+                    </Media>
+                </li>
+                <li class="menu-item">
+                    <button class="toggle-expanded-view" aria-expanded="false">
+                        <Icon name="double-right-chevron" class="icon-right" />
+                        <Icon
+                            name="double-left-chevron"
+                            class="icon-left icon-hidden"
+                        />
+                        <span class="sr-only">Expand Menu</span>
+                    </button>
+                </li>
 
-				{user ? (
-				<slot/>
-				<li class="menu-item bottom-position">
-					<Logout />
-				</li>
-				<li class="menu-item bottom-position settings">
-					<a href="/settings" class="logout-link">
-						<Icon name="setting"/>
-						<span class="sr-only">Settings</span>
-					</a>
-				</li>
-				) : (
-				<li class="menu-item bottom-position">
-					<a href="/login">
-						<Icon name="login"/>
-						<span class="sr-only">Login</span>
-					</a>
-				</li>
-				)}
-			</ul>
-		</nav>
-	</div>
-	<div class="container mobile-menu">
-		<a href="/">
-			<!-- await import('logo.svg').default-->
-			<Media class="logo-mobile" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCC5n1EjQ68IDMLchPOgi5FiG8iazjBBaI4gy_jwzXack0kiksri-yIUqgohhc4Pum8R4&usqp=CAU" alt="TimeGritty Logo">
-		</a>
-		<ResponsiveToggle />
-		<nav>
-			<ul>
-				{user ? (
-				<slot />
-				<li class="menu-item bottom-position logout-btn">
-					{/* TODO: modal that will have a confirmation to logout submitting the logout form */}
-						<Logout />			
-				</li>
-				<li class="menu-item bottom-position settings">
-					<a href="/settings" class="menu-item">
-						<Icon name="setting"/>
-						<span class="sr-only">Settings</span>
-					</a>
-				</li>
-				) : (
-				<li class="menu-item bottom-position login-btn">
-					<a href="/login">
-						<Icon name="login"/>
-						<span class="sr-only">Login</span>
-					</a>
-				</li>
-				)}
-			</ul>
-		</nav>
-	</div>
+                {
+                    user ? (
+                        <>
+                            <slot />
+                            <li class="menu-item bottom-position">
+                                <Logout />
+                            </li>
+                            <li class="menu-item bottom-position settings">
+                                <a href="/settings" class="logout-link">
+                                    <Icon name="setting" />
+                                    <span class="sr-only">Settings</span>
+                                </a>
+                            </li>
+                        </>
+                    ) : (
+                        <li class="menu-item bottom-position">
+                            <a href="/login">
+                                <Icon name="login" />
+                                <span class="sr-only">Login</span>
+                            </a>
+                        </li>
+                    )
+                }
+            </ul>
+        </nav>
+    </div>
+    <div class="container mobile-menu">
+        <a href="/">
+            <!-- await import('logo.svg').default-->
+            <Media
+                class="logo-mobile"
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCC5n1EjQ68IDMLchPOgi5FiG8iazjBBaI4gy_jwzXack0kiksri-yIUqgohhc4Pum8R4&usqp=CAU"
+                alt="TimeGritty Logo"
+            />
+        </a>
+        <ResponsiveToggle />
+        <nav>
+            <ul>
+                {
+                    user ? (
+                        <>
+                            <slot />
+                            <li class="menu-item bottom-position logout-btn">
+                                <Logout />
+                            </li>
+                            <li class="menu-item bottom-position settings">
+                                <a href="/settings" class="menu-item">
+                                    <Icon name="setting" />
+                                    <span class="sr-only">Settings</span>
+                                </a>
+                            </li>
+                        </>
+                    ) : (
+                        <li class="menu-item bottom-position login-btn">
+                            <a href="/login">
+                                <Icon name="login" />
+                                <span class="sr-only">Login</span>
+                            </a>
+                        </li>
+                    )
+                }
+            </ul>
+        </nav>
+    </div>
 </div>
-
-
 <script>
-import { GritError } from "../utils/error.ts"
+    import { GritError } from '../utils/error.ts'
 
-const mainContent = document.querySelector('#main-content') as HTMLElement | null
-if (!mainContent) throw new GritError('Main content element not found', 'UI_FAILURE')
-const mainNav = document.querySelector('#main-nav') as HTMLElement | null
-if (!mainNav) throw new GritError('Main nav element not found', 'UI_FAILURE')
-const mainMenu = mainNav?.querySelector('ul') as HTMLElement | null
-if (!mainMenu) throw new GritError('Main menu element not found', 'UI_FAILURE')
-const toggleExpandedView = document.querySelector('.toggle-expanded-view') as HTMLElement | null
-if (!toggleExpandedView) throw new GritError('Toggle expanded view element not found', 'UI_FAILURE')
-const toggleSpan = toggleExpandedView.querySelector('span') as HTMLElement | null
-if (!toggleSpan) throw new GritError('Toggle span element not found', "UI_FAILURE")
-const toggleIconRight = toggleExpandedView.querySelector('.icon-right') as HTMLElement | null
-if (!toggleIconRight) throw new GritError('Toggle icon right element not found', "UI_FAILURE")
-const toggleIconLeft = toggleExpandedView.querySelector('.icon-left') as HTMLElement | null
-if (!toggleIconLeft) throw new GritError('Toggle icon left element not found', "UI_FAILURE")
-const menuIconLabels = [...mainNav.querySelectorAll('.sr-only')]
-const mediaQuery = window.matchMedia('(min-width: 48em)') 
-let isMenuExpanded = localStorage.getItem('isMenuExpanded')
+    const mainContent = document.querySelector('#main-content') as HTMLElement
+    if (!mainContent)
+        throw new GritError('Main content element not found', 'UI_FAILURE')
+    const mainNav = document.querySelector('#main-nav') as HTMLElement
+    if (!mainNav)
+        throw new GritError('Main nav element not found', 'UI_FAILURE')
+    const mainMenu = mainNav?.querySelector('ul') as HTMLElement
+    if (!mainMenu)
+        throw new GritError('Main menu element not found', 'UI_FAILURE')
+    const toggleExpandedView = document.querySelector(
+        '.toggle-expanded-view'
+    ) as HTMLElement
+    if (!toggleExpandedView)
+        throw new GritError(
+            'Toggle expanded view element not found',
+            'UI_FAILURE'
+        )
+    const toggleSpan = toggleExpandedView.querySelector('span') as HTMLElement
+    if (!toggleSpan)
+        throw new GritError('Toggle span element not found', 'UI_FAILURE')
+    const toggleIconRight = toggleExpandedView.querySelector(
+        '.icon-right'
+    ) as HTMLElement
+    if (!toggleIconRight)
+        throw new GritError('Toggle icon right element not found', 'UI_FAILURE')
+    const toggleIconLeft = toggleExpandedView.querySelector(
+        '.icon-left'
+    ) as HTMLElement
+    if (!toggleIconLeft)
+        throw new GritError('Toggle icon left element not found', 'UI_FAILURE')
+    const menuIconLabels = [...mainNav.querySelectorAll('.sr-only')]
+    const mediaQuery = window.matchMedia('(min-width: 48em)')
+    let isMenuExpanded = localStorage.getItem('isMenuExpanded')
 
+    const setActiveMenuItem = () => {
+        const menuItems = [...mainMenu.querySelectorAll('a')]
 
-const setActiveMenuItem = () => {
-	const menuItems = [...mainMenu.querySelectorAll('a')]
+        menuItems?.forEach((menuItem) => {
+            if (menuItem.pathname === window.location.pathname) {
+                menuItem?.classList.add('is-active')
+                menuItem?.setAttribute('aria-current', 'page')
+            }
+        })
+    }
 
-	menuItems?.forEach(menuItem => {
-		if (menuItem.pathname === window.location.pathname) {
-			menuItem?.classList.add('is-active')
-			menuItem?.setAttribute('aria-current', 'page')
-		}
-	})
+    const expandMenu = () => {
+        mainNav?.classList.add('is-expanded')
+        mainContent?.classList.add('is-expanded')
+        localStorage?.setItem('isMenuExpanded', 'true')
+        toggleExpandedView.setAttribute('aria-expanded', 'true')
+        toggleSpan.textContent = 'Collapse menu'
 
-}
+        toggleIconLeft?.classList.remove('icon-hidden')
+        toggleIconRight?.classList.add('icon-hidden')
 
-const expandMenu = () => {
-	mainNav?.classList.add('is-expanded')
-	mainContent?.classList.add('is-expanded')
-	localStorage?.setItem('isMenuExpanded', 'true')
-	toggleExpandedView.setAttribute('aria-expanded', 'true')
-	toggleSpan.textContent = 'Collapse menu'
+        menuIconLabels.forEach((menuIconLabel) => {
+            menuIconLabel?.classList.remove('sr-only')
+        })
+    }
 
-	toggleIconLeft?.classList.remove('icon-hidden')
-	toggleIconRight?.classList.add('icon-hidden')
+    const collapseMenu = () => {
+        mainNav?.classList.remove('is-expanded')
+        mainContent?.classList.remove('is-expanded')
+        localStorage?.setItem('isMenuExpanded', '')
+        toggleExpandedView.setAttribute('aria-expanded', 'false')
+        toggleSpan.textContent = 'Expand menu'
 
-	menuIconLabels.forEach(menuIconLabel => {
-		menuIconLabel?.classList.remove('sr-only')
-	})
-}
+        toggleIconRight?.classList.remove('icon-hidden')
+        toggleIconLeft?.classList.add('icon-hidden')
 
-const collapseMenu = () => {
-	mainNav?.classList.remove('is-expanded')
-	mainContent?.classList.remove('is-expanded')
-	localStorage?.setItem('isMenuExpanded', '')
-	toggleExpandedView.setAttribute('aria-expanded', 'false')
-	toggleSpan.textContent = 'Expand menu'
+        menuIconLabels.forEach((menuIconLabel) => {
+            menuIconLabel?.classList.add('sr-only')
+        })
+    }
 
-	toggleIconRight?.classList.remove('icon-hidden')
-	toggleIconLeft?.classList.add('icon-hidden')
+    const checkViewportWidth = () => {
+        if (mediaQuery?.matches) {
+            mainNav?.classList.add('is-desktop')
+            mainNav?.classList.remove('is-mobile')
+            collapseMenu()
+        } else {
+            mainNav?.classList.remove('is-desktop')
+            mainNav?.classList.add('is-mobile')
+            collapseMenu()
+        }
+    }
 
-	menuIconLabels.forEach(menuIconLabel => {
-		menuIconLabel?.classList.add('sr-only')
-	})
-}
+    mainMenu &&
+        mainMenu?.addEventListener('keydown', (event) => {
+            const currentMenuItem = (event.target as Element)?.closest('li')
+            const menuItems = [...mainMenu?.querySelectorAll('.menu-item')]
+            const currentIndex = menuItems?.findIndex(
+                (item) => item === currentMenuItem
+            )
 
-const checkViewportWidth = () => {
-	if (mediaQuery?.matches) {
-		mainNav?.classList.add('is-desktop')
-		mainNav?.classList.remove('is-mobile')
-		collapseMenu()
-	} else {
-		mainNav?.classList.remove('is-desktop')
-		mainNav?.classList.add('is-mobile')
-		collapseMenu()
-	}
-}
+            const key = event.key
+            let targetItem
 
-mainMenu && mainMenu?.addEventListener('keydown', event => {
-	const currentMenuItem = (event.target as Element)?.closest('li')
-	const menuItems = [...mainMenu?.querySelectorAll('.menu-item')]
-	const currentIndex = menuItems?.findIndex(item => item === currentMenuItem)
+            if (key === 'ArrowDown') {
+                event.preventDefault()
+                if (
+                    currentMenuItem &&
+                    menuItems.indexOf(currentMenuItem as Element) ===
+                        menuItems.length - 1
+                ) {
+                    targetItem = menuItems[0]
+                } else {
+                    targetItem = menuItems[currentIndex + 1]
+                }
+            }
 
-	const key = event.key
-	let targetItem
+            if (key === 'ArrowUp') {
+                event.preventDefault()
+                if (
+                    currentMenuItem &&
+                    menuItems.indexOf(currentMenuItem as Element) === 0
+                ) {
+                    targetItem = menuItems[menuItems?.length - 1]
+                } else {
+                    targetItem = menuItems[currentIndex - 1]
+                }
+            }
 
-	if (key === 'ArrowDown') {
-		event.preventDefault()
-		if (currentMenuItem && menuItems.indexOf(currentMenuItem as Element) === menuItems.length - 1) {
-			targetItem = menuItems[0]
-		} else {
-			targetItem = menuItems[currentIndex + 1]
-		}
-	}
+            if (key === 'Escape') {
+                targetItem = menuItems[0]
+            }
 
-	if (key === 'ArrowUp') {
-		event.preventDefault()
-		if (currentMenuItem && menuItems.indexOf(currentMenuItem as Element) === 0) {
-			targetItem = menuItems[menuItems?.length - 1]
-		} else {
-			targetItem = menuItems[currentIndex - 1]
-	      	}
-	}
+            if (targetItem) {
+                const focusableElement = targetItem?.querySelector(
+                    'a, button, input'
+                ) as HTMLElement | null
+                focusableElement?.focus()
+            }
+        })
 
-	if (key === 'Escape') {
-		targetItem = menuItems[0]
-	}
+    toggleExpandedView?.addEventListener('click', () => {
+        mainNav?.classList?.contains('is-expanded')
+            ? collapseMenu()
+            : expandMenu()
+    })
 
-	if (targetItem) {
-		const focusableElement = targetItem?.querySelector('a, button, input') as HTMLElement | null
-		focusableElement?.focus()
-	}
-})
+    window.addEventListener('resize', checkViewportWidth)
 
-toggleExpandedView?.addEventListener('click', () => {
-		mainNav?.classList?.contains('is-expanded')
-		? collapseMenu()
-		: expandMenu()
-})
+    setActiveMenuItem()
+    checkViewportWidth()
 
-window.addEventListener('resize', checkViewportWidth)
-
-setActiveMenuItem()
-checkViewportWidth()
-
-if (isMenuExpanded === 'true') {
-	expandMenu()
-}
+    if (isMenuExpanded === 'true') {
+        expandMenu()
+    }
 </script>
 
 <style is:global>
-.logo-mobile {
-	height: 32px;
-}
-.icon-hidden {
-	display: none;
-}
+    .logo-mobile {
+        height: 32px;
+    }
+    .icon-hidden {
+        display: none;
+    }
 
-.icon-active {
-	display: block;
-}
-.responsive-toggle {
-    display: none;
-    padding: 0;
-    border: none
-}
+    .icon-active {
+        display: block;
+    }
+    .responsive-toggle {
+        display: none;
+        padding: 0;
+        border: none;
+    }
 
-.responsive-toggle svg {
-    width: 30px;
-}
+    .responsive-toggle svg {
+        width: 30px;
+    }
 
-.responsive-toggle svg path {
-    stroke: var(--primary-300);
-    transition: stroke .2s ease-in-out
-}
+    .responsive-toggle svg path {
+        stroke: var(--primary-300);
+        transition: stroke 0.2s ease-in-out;
+    }
 
-.responsive-toggle:hover svg path {
-    stroke: var(--secondary-200);
-}
+    .responsive-toggle:hover svg path {
+        stroke: var(--secondary-200);
+    }
 
-#main-nav {
-	background-color: var(--neutral-900);
-}
+    #main-nav {
+        background-color: var(--neutral-900);
+    }
 
-#main-nav>.container {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-		padding-top: 1rem;
-		padding-bottom: 1rem;
-}
+    #main-nav > .container {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
 
-#main-nav.is-desktop {
-		width: 3.75rem;
-		min-height: 100svh;
-		position: fixed;
-		z-index: 1;
-		box-shadow: 0 0 2.5rem #00000026;
-}
+    #main-nav.is-desktop {
+        width: 3.75rem;
+        min-height: 100svh;
+        position: fixed;
+        z-index: 1;
+        box-shadow: 0 0 2.5rem #00000026;
+    }
 
-#main-nav.is-desktop .mobile-menu {
-	display: none;
-} 
+    #main-nav.is-desktop .mobile-menu {
+        display: none;
+    }
 
-#main-nav.is-mobile {
-	flex-direction: column;
-}
+    #main-nav.is-mobile {
+        flex-direction: column;
+    }
 
-#main-nav.is-mobile .mobile-menu nav {
-	display: none;
-} 
+    #main-nav.is-mobile .mobile-menu nav {
+        display: none;
+    }
 
-#main-nav.is-mobile .mobile-menu.show nav {
-	display: block;
-} 
+    #main-nav.is-mobile .mobile-menu.show nav {
+        display: block;
+    }
 
-#main-nav.is-mobile .responsive-toggle {
-	display: block;
-} 
+    #main-nav.is-mobile .responsive-toggle {
+        display: block;
+    }
 
-#main-nav.is-mobile .desktop-menu {
-	display: none;
-} 
+    #main-nav.is-mobile .desktop-menu {
+        display: none;
+    }
 
-#main-nav nav {
-	width: 100%;
-}
+    #main-nav nav {
+        width: 100%;
+    }
 
-#main-nav nav>ul {
-	display:flex;
-	width: 100%;
-}
+    #main-nav nav > ul {
+        display: flex;
+        width: 100%;
+    }
 
-#main-nav nav>ul .is-active {
-	font-weight: 700;
-}
+    #main-nav nav > ul .is-active {
+        font-weight: 700;
+    }
 
-#main-nav nav li,
-#main-nav nav a,
-#main-nav nav button {
-	width: 100%;
-	text-decoration: none;
-}
+    #main-nav nav li,
+    #main-nav nav a,
+    #main-nav nav button {
+        width: 100%;
+        text-decoration: none;
+    }
 
-#main-nav nav a,
-#main-nav nav button {
-    display: flex;
-    justify-content: center;
-    padding: 1rem 0;
-    color: var(--neutral-300);
-    transition: color .2s ease-in-out,background-color .2s ease-in-out
-}
+    #main-nav nav a,
+    #main-nav nav button {
+        display: flex;
+        justify-content: center;
+        padding: 1rem 0;
+        color: var(--neutral-300);
+        transition:
+            color 0.2s ease-in-out,
+            background-color 0.2s ease-in-out;
+    }
 
-#main-nav nav .setting a {
-    padding: 0
-}
+    #main-nav nav .setting a {
+        padding: 0;
+    }
 
-#main-nav nav .setting a svg {
-    padding: .5rem;
-    max-width: 60px;
-    border-radius: 100%
-}
+    #main-nav nav .setting a svg {
+        padding: 0.5rem;
+        max-width: 60px;
+        border-radius: 100%;
+    }
 
-#main-nav nav button {
-    border: none;
-		align-items: center;
-}
+    #main-nav nav button {
+        border: none;
+        align-items: center;
+    }
 
+    #main-nav nav svg {
+        width: 30px;
+        font-size: 1.5rem;
+    }
 
-#main-nav nav svg {
-    width: 30px;
-		font-size: 1.5rem;
-}
+    #main-nav nav svg path {
+        stroke: var(--neutral-600);
+        transition: fill 0.2s ease-in-out;
+    }
 
-#main-nav nav svg path {
-    stroke: var(--neutral-600);
-    transition: fill .2s ease-in-out
-}
+    #main-nav nav a:hover,
+    #main-nav nav a:focus,
+    #main-nav nav a.is-active,
+    #main-nav nav button:hover,
+    #main-nav nav button:not(.toggle-expanded-view):focus {
+        color: var(--neutral-800);
+        background-color: var(--secondary-200);
+    }
 
-#main-nav nav a:hover,
-#main-nav nav a:focus,
-#main-nav nav a.is-active,
-#main-nav nav button:hover,
-#main-nav nav button:not(.toggle-expanded-view):focus {
-    color: var(--neutral-800);
-    background-color: var(--secondary-200);
-}
+    #main-nav nav a:hover svg path,
+    #main-nav nav a:focus svg path,
+    #main-nav nav a.is-active svg path,
+    #main-nav nav button:hover svg path,
+    #main-nav nav button:not(.toggle-expanded-view):focus svg path {
+        stroke: var(--neutral-800);
+    }
 
-#main-nav nav a:hover svg path,
-#main-nav nav a:focus svg path,
-#main-nav nav a.is-active svg path,
-#main-nav nav button:hover svg path,
-#main-nav nav button:not(.toggle-expanded-view):focus svg path {
-    stroke: var(--neutral-800);
-}
+    #main-nav .desktop-menu {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 100%;
+    }
 
-#main-nav .desktop-menu {
-	display: flex;
-	flex-direction: column;	
-	justify-content: space-between;
-	min-height: 100%;
-}
+    #main-nav .desktop-menu ul {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100svh;
+        position: relative;
+    }
 
-#main-nav .desktop-menu ul {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	min-height: 100svh;
-	position: relative;
-}
+    #main-nav .desktop-menu ul .bottom-position {
+        position: absolute;
+    }
 
-#main-nav .desktop-menu ul .bottom-position {
-    position: absolute
-}
+    #main-nav .desktop-menu ul .bottom-position:nth-last-of-type(1) {
+        bottom: 0;
+    }
 
-#main-nav .desktop-menu ul .bottom-position:nth-last-of-type(1) {
-    bottom: 0
-}
+    #main-nav .desktop-menu ul .bottom-position:nth-last-of-type(2) {
+        bottom: 3.75rem;
+    }
 
-#main-nav .desktop-menu ul .bottom-position:nth-last-of-type(2) {
-    bottom: 3.75rem
-}
+    #main-nav .desktop-menu ul .bottom-position:nth-last-of-type(3) {
+        bottom: 8rem;
+    }
 
-#main-nav .desktop-menu ul .bottom-position:nth-last-of-type(3) {
-    bottom: 8rem
-}
+    #main-nav .desktop-menu ul .brand-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 1rem;
+        color: var(--neutral-100);
+        background-color: var(--neutral-700);
+    }
 
-#main-nav .desktop-menu ul .brand-logo {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: .5rem;
-	padding: 1rem;
-	color: var(--neutral-100);
-	background-color: var(--neutral-700);
-}
+    #main-nav .desktop-menu ul .brand-logo img {
+        max-height: 1.5rem;
+    }
+    #main-nav .desktop-menu .toggle-expanded-view:hover span,
+    #main-nav .desktop-menu .toggle-expanded-view:focus span {
+        text-decoration: none;
+    }
 
-#main-nav .desktop-menu ul .brand-logo img {
-	max-height: 1.5rem;
-}
-#main-nav .desktop-menu .toggle-expanded-view:hover span,
-#main-nav .desktop-menu .toggle-expanded-view:focus span {
-    text-decoration: none;
-}
+    #main-nav.is-expanded {
+        width: 12.5rem;
+    }
 
-#main-nav.is-expanded {
-    width: 12.5rem;
-}
+    #main-nav.is-expanded .desktop-menu a,
+    #main-nav.is-expanded .desktop-menu button {
+        justify-content: left;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem 0.75rem;
+    }
 
-#main-nav.is-expanded .desktop-menu a,
-#main-nav.is-expanded .desktop-menu button {
-    justify-content: left;
-    align-items: center;
-    gap: .5rem;
-    padding: 1rem .75rem;
-}
+    #main-nav.is-expanded .desktop-menu .setting a {
+        padding: 0.5rem 0.3rem 0;
+    }
 
-#main-nav.is-expanded .desktop-menu .setting a {
-    padding: .5rem .3rem 0;
-}
+    #main-content.is-expanded {
+        margin-left: 200px;
+    }
 
-#main-content.is-expanded {
-    margin-left: 200px
-}
+    #main-nav .mobile-menu nav > ul {
+        flex-direction: column;
+        margin-top: 1rem;
+    }
+    #main-nav .mobile-menu nav > ul a {
+        justify-content: start;
+        align-items: center;
+        text-align: center;
+        gap: 0.5rem;
+    }
 
-#main-nav .mobile-menu nav>ul {
-    flex-direction: column;
-    margin-top: 1rem
-}
-#main-nav .mobile-menu nav>ul a {
-    justify-content: start;
-    align-items: center;
-		text-align: center;
-    gap: .5rem
-}
+    #main-nav .mobile-menu nav > ul a:hover,
+    #main-nav .mobile-menu nav > ul a:focus,
+    #main-nav .mobile-menu nav > ul a.is-active,
+    #main-nav .mobile-menu nav > ul button:hover,
+    #main-nav .mobile-menu nav > ul button:focus {
+        color: var(--primary-200);
+        background-color: transparent;
+    }
 
-#main-nav .mobile-menu nav>ul a:hover, 
-#main-nav .mobile-menu nav>ul a:focus,
-#main-nav .mobile-menu nav>ul a.is-active,
-#main-nav .mobile-menu nav>ul button:hover,
-#main-nav .mobile-menu nav>ul button:focus{
-    color: var(--primary-200);
-    background-color: transparent
-}
+    #main-nav .mobile-menu nav > ul a:hover svg path,
+    #main-nav .mobile-menu nav > ul a:focus svg path {
+        fill: var(--neutral-600);
+    }
 
-#main-nav .mobile-menu nav>ul a:hover svg path,
-#main-nav .mobile-menu nav>ul a:focus svg path {
-    fill: var(--neutral-600);
-}
+    #main-nav .mobile-menu nav svg {
+        width: 35px;
+    }
 
-#main-nav .mobile-menu nav svg {
-    width: 35px;
-}
+    #main-nav .mobile-menu nav svg path {
+        transition: fill 0.2s ease-in-out;
+    }
 
-#main-nav .mobile-menu nav svg path {
-    transition: fill .2s ease-in-out;
-}
+    #main-nav nav .logout-btn button {
+        justify-content: start;
+        gap: 0.5rem;
+    }
 
-#main-nav nav .logout-btn button {
-	justify-content: start;
-	gap: .5rem;
-}
-
-.sr-only {
-	position: absolute;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  margin: 0;
-  padding: 0;
-  width: 1px;
-  height: auto;
-  border: 0;
-  white-space: nowrap;
-}
-
-
-
+    .sr-only {
+        position: absolute;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        margin: 0;
+        padding: 0;
+        width: 1px;
+        height: auto;
+        border: 0;
+        white-space: nowrap;
+    }
 </style>

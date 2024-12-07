@@ -1,27 +1,30 @@
 {
-  "name": "timegritty",
-  "type": "module",
-  "version": "0.0.1",
-  "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro check && astro build",
-    "preview": "astro preview",
-    "astro": "astro"
-  },
-  "dependencies": {
-    "@astrojs/check": "^0.9.4",
-    "@astrojs/netlify": "^5.5.4",
-    "@neondatabase/serverless": "^0.10.3",
-    "accessible-astro-components": "^2.3.6",
-    "astro": "^4.16.9",
-    "astro-icon": "^1.1.2",
-    "bcryptjs": "^2.4.3",
-    "jose": "^5.9.6",
-    "nanoid": "^5.0.8",
-    "typescript": "^5.6.3"
-  },
-  "devDependencies": {
-    "@types/bcryptjs": "^2.4.6"
-  }
+    "name": "timegritty",
+    "type": "module",
+    "version": "0.0.1",
+    "scripts": {
+        "dev": "astro dev",
+        "start": "astro dev",
+        "build": "npm run fmt && astro check && astro build",
+        "preview": "astro preview",
+        "astro": "astro",
+        "fmt": "npx prettier . --write"
+    },
+    "dependencies": {
+        "@astrojs/check": "^0.9.4",
+        "@astrojs/netlify": "^5.5.4",
+        "@neondatabase/serverless": "^0.10.3",
+        "accessible-astro-components": "^2.3.6",
+        "astro": "^4.16.9",
+        "astro-icon": "^1.1.2",
+        "bcryptjs": "^2.4.3",
+        "jose": "^5.9.6",
+        "nanoid": "^5.0.8",
+        "typescript": "^5.6.3"
+    },
+    "devDependencies": {
+        "@types/bcryptjs": "^2.4.6",
+        "prettier": "^3.4.2",
+        "prettier-plugin-astro": "^0.14.1"
+    }
 }

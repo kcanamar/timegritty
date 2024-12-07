@@ -1,16 +1,31 @@
 ---
 // TODO gather Error handleing as props when rendering
-if (Astro.request.method === "POST") {
-    console.log(await Astro.request.formData(), "Component")
-} 
-
+if (Astro.request.method === 'POST') {
+    console.log(await Astro.request.formData(), 'Component')
+}
 ---
+
 <form method="POST" action="/api/signup">
     <label for="username">Username</label>
-    <input type="text" name="name" id="username" autocomplete="username" required maxlength="32"/>
+    <input
+        type="text"
+        name="name"
+        id="username"
+        autocomplete="username"
+        required
+        maxlength="32"
+    />
     <label for="email">Email</label>
     <input type="email" name="email" id="email" autocomplete="email" required />
     <label for="password">Password</label>
-    <input type="password" name="password" id="password" autocomplete="new-password" required minlength="6" maxlength="32" />
+    <input
+        type="password"
+        name="password"
+        id="password"
+        autocomplete="new-password"
+        required
+        minlength="6"
+        maxlength="32"
+    />
     <button>Submit</button>
 </form>
