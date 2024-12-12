@@ -30,30 +30,13 @@ const user = Astro.locals?.authUser?.name
                         <span class="sr-only">Expand Menu</span>
                     </button>
                 </li>
-
-                {
-                    user ? (
-                        <>
-                            <slot />
-                            <li class="menu-item bottom-position">
-                                <Logout />
-                            </li>
-                            <li class="menu-item bottom-position settings">
-                                <a href="/settings" class="logout-link">
-                                    <Icon name="setting" />
-                                    <span class="sr-only">Settings</span>
-                                </a>
-                            </li>
-                        </>
-                    ) : (
-                        <li class="menu-item bottom-position">
-                            <a href="/login">
-                                <Icon name="login" />
-                                <span class="sr-only">Login</span>
-                            </a>
-                        </li>
-                    )
-                }
+                <slot />
+                <li class="menu-item bottom-position">
+                    <a href="/login">
+                        <Icon name="login" />
+                        <span class="sr-only">Login</span>
+                    </a>
+                </li>
             </ul>
         </nav>
     </div>

@@ -1,5 +1,5 @@
 ---
-import Base from '../layouts/Base.astro'
+import Marketing from '../layouts/Marketing.astro'
 import LoginForm from '../components/Forms/Login.astro'
 import { errMessages } from '../utils/error.ts'
 
@@ -7,7 +7,7 @@ const code = Astro.url.searchParams.get('code') || 'UNKNOWN_ERROR'
 const errorInfo = errMessages[code]
 ---
 
-<Base title={code}>
+<Marketing title={code}>
     {
         errorInfo && (
             <div>
@@ -27,4 +27,4 @@ const errorInfo = errMessages[code]
             </div>
         )
     }
-</Base>
+</Marketing>
