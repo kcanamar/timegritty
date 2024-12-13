@@ -1,0 +1,180 @@
+---
+const userName = Astro.props.userName
+---
+
+<div class="setting-name-ui">
+    <div class="setting-description">
+        <p>
+            Change your account name. <strong
+                ><em>You can only do this once every 30 days.</em></strong
+            >
+        </p>
+    </div>
+    <form
+        action="/api/user/name"
+        method="POST"
+        id="update-name"
+        class="setting-form"
+    >
+        <label for="name">New name? Sweet.</label>
+        <input
+            type="text"
+            name="nameUpdate"
+            id="name"
+            autocomplete="username"
+            required
+            value={userName}
+            maxlength="32"
+        />
+        <div id="name-error" class="modal-error-msg">
+            <strong><em>We cannot call you the same thing twice.</em></strong>
+        </div>
+        <input
+            type="submit"
+            id="name-submit"
+            class="confirm-modal-btn"
+            value="Confirm"
+            disabled
+        />
+    </form>
+</div>
+<script>
+    // ---------------- Forms Submissions
+    import { GritError } from '../../utils/error'
+    const nameForm = document.querySelector(
+        '#update-name'
+    ) as HTMLFormElement | null
+    if (!nameForm)
+        throw new GritError('Name form cannot be found', 'UI_FAILURE')
+    const nameInput = document.querySelector('#name') as HTMLInputElement | null
+    if (!nameInput)
+        throw new GritError('Name input cannot be found', 'UI_FAILURE')
+    const dialogErrMsgs = document.querySelectorAll('.modal-error-msg')
+    if (!dialogErrMsgs)
+        throw new GritError(
+            'Cannot find the dialog error messages',
+            'UI_FAILURE'
+        )
+    const nameSubmit = document.querySelector(
+        '#name-submit'
+    ) as HTMLInputElement | null
+    if (!nameSubmit)
+        throw new GritError(
+            'Cannot find the submit button for the name change form',
+            'UI_FAILURE'
+        )
+
+    function validateSubmission(event: Event) {
+        let isValid = true
+
+        dialogErrMsgs.forEach((error) => {
+            if (error instanceof HTMLElement) {
+                error.style.display = 'none'
+            }
+        })
+
+        if (
+            (event.target as HTMLInputElement)?.value ===
+            nameInput?.defaultValue
+        ) {
+            isValid = false
+            console.log(isValid)
+            const errorElement = document.getElementById(
+                `${(event.target as HTMLElement)?.id}-error`
+            )
+            if (
+                errorElement instanceof HTMLElement &&
+                nameSubmit &&
+                nameInput
+            ) {
+                errorElement.style.display = 'block'
+                nameSubmit.disabled = !isValid
+                nameSubmit.classList.add('error-msg-outline')
+                nameInput.classList.add('error-msg-outline')
+            }
+        }
+
+        if (isValid && nameSubmit && nameInput) {
+            nameSubmit.disabled = !isValid
+            nameSubmit.classList.remove('error-msg-outline')
+            nameInput.classList.remove('error-msg-outline')
+        }
+    }
+    nameInput.addEventListener('input', validateSubmission)
+    nameInput.addEventListener('blur', validateSubmission)
+</script>
+<style is:global>
+    .error-msg-outline {
+        outline: var(--error-300) 2px solid;
+    }
+    .darkmode .setting-form input[type='text'] {
+        background-color: transparent;
+        padding: 0.3rem;
+        border-radius: var(--radius-small);
+    }
+
+    .setting-form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1rem;
+    }
+
+    .setting-form input[type='submit'] {
+        border-radius: var(--radius-small);
+    }
+
+    .setting-form .modal-error-msg {
+        color: var(--error-300);
+        display: none;
+    }
+
+    #name {
+        padding: 0.4rem;
+    }
+
+    #name-submit,
+    #destroy-submit {
+        opacity: 0.5;
+        padding: 0.3rem;
+        cursor: not-allowed;
+        border: none;
+    }
+
+    #name-submit:valid {
+        opacity: 0.7;
+        background-color: var(--success-500);
+        color: var(--neutral-100);
+        cursor: pointer;
+    }
+
+    #name-submit:valid:hover,
+    #name-submit:valid:focus,
+    #destroy-submit:valid:hover,
+    #destroy-submit:valid:focus {
+        opacity: 1;
+        background-color: var(--success-700);
+        color: var(--neutral-100);
+    }
+
+    .setting-description p,
+    .setting-description {
+        padding-top: 1rem;
+    }
+    .setting-name-ui strong em {
+        color: var(--error-500);
+    }
+
+    @media (min-width: 48em) {
+        .setting-name-ui {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+        }
+        .setting-description {
+        }
+        .setting-form {
+            padding: 3rem;
+        }
+    }
+</style>

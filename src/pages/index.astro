@@ -1,25 +1,15 @@
 ---
-import Base from "../layouts/Base.astro"
+import Marketing from '../layouts/Marketing.astro'
 ---
 
-<Base>
-	<h1>TimeGritty</h1>
-
-	<button id="login">Login</button>
-</Base>
-
-<script>
-	const logoutButton = document.getElementById("login");
-	if (logoutButton) {
-		logoutButton.addEventListener("click", () => {
-		fetch("/api/login", { method: "POST"})
-			.then((res) => {
-				if (!res.ok) throw new Error("Not ok!")
-				window.location.href = "/protected"
-			}).catch((error) => {
-				console.warn("Fetch failed")
-				console.error(error)
-			})
-		})
-	}
-</script>
+<Marketing title="TimeGritty">
+    <!-- TODOS V -->
+    <!-- SUMMARY -->
+    <!-- CTA -->
+    <!-- SOCIAL PROOF -->
+    <!-- BENEFITS -->
+    <!-- CTA -->
+    <!-- FEATURES -->
+    <!-- SOCIAL PROOF -->
+    <!-- CTA -->
+</Marketing>

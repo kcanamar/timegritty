@@ -1,0 +1,84 @@
+---
+import { Icon } from 'astro-icon/components'
+import { Notification } from 'accessible-astro-components'
+
+const user = Astro.props.user
+---
+
+<br />
+<Notification type="warning" ariaLive="assertive" role="alert">
+    <Icon name="danger" class="icon-danger" />
+    <p>
+        <strong>Danger: </strong> There is no undo button for what you are about
+        to do!
+    </p>
+</Notification>
+
+<form
+    action="/api/user/destroy"
+    method="POST"
+    id="destroy-user"
+    class="setting-form"
+>
+    <label for="confirm">
+        If you are sure you want to destroy your account,
+        <span
+            >enter <em>{user.name}/{user.email}</em> exactly as show in the box below.</span
+        >
+    </label>
+    <input type="text" name="confirmDestroy" id="confirm" required />
+    <input type="checkbox" name="confirmed" id="confirm-check" hidden />
+    <div id="confirm-error" class="modal-error-msg">
+        <strong><em>They must match in every way.</em></strong>
+    </div>
+    <input
+        type="submit"
+        id="destroy-submit"
+        class="confirm-btn"
+        value="Destroy"
+        disabled
+    />
+</form>
+
+<script is:inline define:vars={{ user }}>
+    const destroyInput = document.querySelector('#confirm')
+    const destroyErrMsg = document.querySelector('#confirm-error')
+    const destroySubmit = document.querySelector('#destroy-submit')
+    const confirmCheck = document.querySelector('#confirm-check')
+    const email = user.email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const destroyPattern = user.name + '\/' + email
+    const destroyRx = new RegExp(destroyPattern)
+
+    function validateSubmission(event) {
+        let data = event.target.value
+        let isValid = destroyRx.test(data)
+
+        confirmCheck.checked = false
+        destroyErrMsg.style.display = 'block'
+        destroySubmit.style.outline = 'hsl(0, 100%, 80%) 2px solid'
+        destroyInput.style.outline = 'hsl(0, 100%, 80%) 2px solid'
+
+        if (isValid) {
+            destroySubmit.disabled = !isValid
+            confirmCheck.checked = true
+            destroyErrMsg.style.display = 'none'
+            destroySubmit.style.outline = 'none'
+            destroyInput.style.outline = 'none'
+        }
+    }
+
+    destroyInput.addEventListener('input', validateSubmission)
+    destroyInput.addEventListener('blur', validateSubmission)
+</script>
+
+<style>
+    #destroy-submit:valid {
+        opacity: 1;
+        background-color: var(--error-500);
+        cursor: pointer;
+    }
+
+    #destroy-user span em {
+        color: var(--error-300);
+    }
+</style>

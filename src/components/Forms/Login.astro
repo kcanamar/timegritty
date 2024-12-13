@@ -1,0 +1,169 @@
+---
+
+---
+
+<div class="userform-container">
+    <form class="login-form" action="/api/login" method="POST">
+        <h2>Login</h2>
+        <div class="form-group">
+            <label for="login-email">Email</label>
+            <input
+                type="email"
+                name="email"
+                id="login-email"
+                required
+                autocomplete="email"
+                placeholder="Enter your email"
+            />
+        </div>
+        <div class="form-group">
+            <label for="login-password">Password</label>
+            <div class="password-container">
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    id="login-password"
+                    autocomplete="current-password"
+                    required
+                    maxlength="32"
+                />
+                <button
+                    type="button"
+                    class="toggle-password"
+                    id="togglePassword">show</button
+                >
+            </div>
+        </div>
+        <button type="submit" class="login-btn">Submit</button>
+        <p class="signup-link">
+            Don't have an account? <a href="/signup">Sign Up</a>
+        </p>
+        <p class="password-link">
+            Maybe you <a href="/password">Forgot your password?</a>
+        </p>
+    </form>
+</div>
+
+<script>
+    import { GritError } from '../../utils/error'
+    const loginPasswordInput = document.querySelector('#login-password')
+    if (!loginPasswordInput)
+        throw new GritError(
+            'Current password input cannot be found',
+            'UI_FAILURE'
+        )
+    const togglePassword = document.querySelector('#togglePassword')
+    if (!togglePassword)
+        throw new GritError('Cannot find toggle current password', 'UI_FAILURE')
+    togglePassword.addEventListener('click', function () {
+        if ((loginPasswordInput as HTMLInputElement).type === 'password') {
+            ;(loginPasswordInput as HTMLInputElement).type = 'text'
+            togglePassword.textContent = 'hide'
+        } else {
+            ;(loginPasswordInput as HTMLInputElement).type = 'password'
+            togglePassword.textContent = 'show'
+        }
+    })
+</script>
+
+<style is:global>
+    .darkmode #login-email,
+    .darkmode #login-password {
+        background-color: var(--neutral-800);
+    }
+    .userform-container {
+        width: 100%;
+        margin: auto;
+        max-width: 400px;
+        padding: 2rem;
+        border-radius: 8px;
+        background-color: var(--neutral-700);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .login-form h2 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--neutral-600);
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 0.75rem;
+        border-radius: var(--radius-small);
+        font-size: 1rem;
+    }
+
+    .login-btn {
+        width: 100%;
+        border: none;
+        color: var(--neutral-600);
+        border-radius: var(--radius-small);
+        padding: 0.7rem;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .signup-link,
+    .password-link {
+        text-align: center;
+        margin-top: 1rem;
+    }
+
+    .signup-link a,
+    .password-link a {
+        color: var(--secondary-300);
+    }
+
+    #current-password {
+        padding: 0.4rem;
+    }
+
+    .login-btn:valid:hover,
+    .login-btn:valid:focus {
+        cursor: pointer;
+        background-color: var(--success-700);
+        color: var(--neutral-100);
+    }
+
+    .userform-container .password-container {
+        display: flex;
+        flex-direction: row;
+        flex-grow: 10;
+    }
+
+    .userform-container .password-container input {
+        width: 100%;
+    }
+
+    .userform-container .password-container .toggle-password {
+        margin-left: -3rem;
+        padding: 0;
+        z-index: 1;
+        border: none;
+    }
+
+    @media (min-width: 48em) {
+    }
+    @media screen and (max-width: 480px) {
+        .userform-container {
+            width: 100%;
+            padding: 1.5rem;
+        }
+    }
+</style>

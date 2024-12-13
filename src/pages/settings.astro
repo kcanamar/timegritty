@@ -1,0 +1,137 @@
+---
+import Base from '../layouts/Base.astro'
+import NameUpdate from '../components/Forms/NameUpdate.astro'
+import PasswordUpdate from '../components/Forms/PasswordUpdate.astro'
+import DestroyAccount from '../components/Forms/DestroyAccount.astro'
+import { Notification } from 'accessible-astro-components'
+import { Icon } from 'astro-icon/components'
+
+const user = Astro.locals.authUser
+const passwordErrMsg = Astro.url.searchParams.get('code') === 'INVALID_CREDS'
+const successMessage = Astro.url.searchParams.get('success')
+---
+
+<Base title={`Account Settings`}>
+    <div class="settings-ui">
+        <h1>Account Settings</h1><br />
+        <div class="tab">
+            <button class="tab-links active-tab">Account</button>
+            <button class="tab-links">Danger</button>
+        </div>
+        {
+            successMessage && (
+                <div class="success-msg">
+                    <br />
+                    <Notification
+                        type="success"
+                        ariaLive="assertive"
+                        role="alert"
+                    >
+                        <Icon name="success" class="icon-success" />
+                        Successful update of your {successMessage}
+                    </Notification>
+                </div>
+            )
+        }
+        <div id="Account" class="tabcontent">
+            <!-- TODO Notification's from the server -->
+            <!-- TODO Email Update form -->
+            <NameUpdate userName={user.name} />
+            <PasswordUpdate passwordErrMsg={passwordErrMsg} />
+        </div>
+        <div id="Danger" class="tabcontent">
+            <DestroyAccount user={user} />
+        </div>
+    </div>
+</Base>
+
+<script>
+    import { GritError } from '../utils/error'
+    // ---------------- Tabs
+    const tabContent = document.querySelectorAll('.tabcontent')
+    if (!tabContent) throw new GritError('Tab Contents not found', 'UI_FAILURE')
+    const tabLinks = document.querySelectorAll('.tab-links')
+    if (!tabLinks) throw new GritError('Tab Links not found', 'UI_FAILURE')
+
+    function removeContentDisplay() {
+        tabContent.forEach((tab) => {
+            ;(tab as HTMLElement).style.display = 'none'
+        })
+
+        // update the browser url removing all queries without reloading the page
+        window.history.pushState(
+            {},
+            document.title,
+            window.location.origin + window.location.pathname
+        )
+        const settingNotification = document.querySelector(
+            '.success-msg'
+        ) as HTMLElement
+        if (settingNotification) {
+            settingNotification.style.display = 'none'
+        }
+    }
+
+    function removeAllActive() {
+        tabLinks.forEach((link) => {
+            link.classList.remove('active-tab')
+        })
+    }
+
+    tabLinks.forEach((link) => {
+        link.addEventListener('click', (event) => {
+            removeContentDisplay()
+            removeAllActive()
+
+            const activeTab = event.target as HTMLElement | null
+            if (!activeTab)
+                throw new GritError('Active Tab not found', 'UI_FAILURE')
+            const activeContent = document.getElementById(
+                activeTab.textContent || ''
+            ) as HTMLElement | null
+            if (!activeContent)
+                throw new GritError('Active Content not found', 'UI_FAILURE')
+
+            activeTab.classList.add('active-tab')
+            activeContent.style.display = 'block'
+        })
+    })
+</script>
+
+<style is:global>
+    #Danger {
+        display: none;
+    }
+
+    .tab-header {
+        display: flex;
+        justify-content: space-between;
+    }
+    .topright {
+        cursor: pointer;
+        font-size: 2rem;
+    }
+
+    .topright:hover {
+        color: var(--action-color);
+    }
+
+    .icon-success g {
+        stroke: var(--success-500);
+    }
+    .icon-danger {
+        fill: var(--warning-500);
+    }
+
+    .active-tab {
+        background-color: var(--secondary-200);
+        color: var(--neutral-100);
+    }
+
+    /* * ---------------- Media Queries */
+    @media (min-width: 48em) {
+        .account-setting {
+            justify-content: space-between;
+        }
+    }
+</style>

@@ -1,6 +1,6 @@
 ---
 import { DarkMode, SkipLinks } from 'accessible-astro-components'
-import Nav from '../components/Nav.astro'
+import MarketNav from '../components/MarketNav.astro'
 import { Icon } from 'astro-icon/components'
 
 const { title } = Astro.props
@@ -22,26 +22,33 @@ const { title } = Astro.props
             <DarkMode />
         </div>
         <div class="admin-interface">
-            <Nav>
+            <MarketNav>
+                <!-- https://www.youtube.com/watch?v=DNXEORSk4GU Reference -->
                 <li class="menu-item">
-                    <a href="/dashboard">
-                        <Icon name="dashboard" />
-                        <span class="sr-only">Dashboard</span>
+                    <a href="/">
+                        <Icon name="home" />
+                        <span class="sr-only">Home</span>
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="/report">
-                        <Icon name="report" />
-                        <span class="sr-only">Check-In</span>
+                    <a href="/pricing">
+                        <Icon name="pricing" />
+                        <span class="sr-only">Pricing</span>
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="/plan">
-                        <Icon name="plan" />
-                        <span class="sr-only">Quarter Plan</span>
+                    <a href="/contact">
+                        <Icon name="contact" />
+                        <span class="sr-only">Contact</span>
                     </a>
                 </li>
-            </Nav>
+                <li class="menu-item">
+                    <a href="/about">
+                        <Icon name="about" />
+                        <span class="sr-only">About</span>
+                    </a>
+                </li>
+            </MarketNav>
         </div>
         <main id="main-content">
             <slot />
