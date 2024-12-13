@@ -18,16 +18,22 @@
         </div>
         <div class="form-group">
             <label for="login-password">Password</label>
-            <input
-                type="password"
-                name="password"
-                id="login-password"
-                placeholder="Password please"
-                required
-                autocomplete="current-password"
-                minlength="6"
-                maxlength="32"
-            />
+            <div class="password-container">
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    id="login-password"
+                    autocomplete="current-password"
+                    required
+                    maxlength="32"
+                />
+                <button
+                    type="button"
+                    class="toggle-password"
+                    id="togglePassword">show</button
+                >
+            </div>
         </div>
         <button type="submit" class="login-btn">Submit</button>
         <p class="signup-link">
@@ -38,6 +44,28 @@
         </p>
     </form>
 </div>
+
+<script>
+    import { GritError } from '../../utils/error'
+    const loginPasswordInput = document.querySelector('#login-password')
+    if (!loginPasswordInput)
+        throw new GritError(
+            'Current password input cannot be found',
+            'UI_FAILURE'
+        )
+    const togglePassword = document.querySelector('#togglePassword')
+    if (!togglePassword)
+        throw new GritError('Cannot find toggle current password', 'UI_FAILURE')
+    togglePassword.addEventListener('click', function () {
+        if ((loginPasswordInput as HTMLInputElement).type === 'password') {
+            ;(loginPasswordInput as HTMLInputElement).type = 'text'
+            togglePassword.textContent = 'hide'
+        } else {
+            ;(loginPasswordInput as HTMLInputElement).type = 'password'
+            togglePassword.textContent = 'show'
+        }
+    })
+</script>
 
 <style is:global>
     .darkmode #login-email,
@@ -81,23 +109,56 @@
         font-size: 1rem;
     }
 
-
     .login-btn {
         width: 100%;
-        padding: 0.75rem;
         border: none;
+        color: var(--neutral-600);
         border-radius: var(--radius-small);
+        padding: 0.7rem;
         font-size: 1rem;
         cursor: pointer;
         transition: background-color 0.3s ease;
     }
-    .signup-link, .password-link {
+    .signup-link,
+    .password-link {
         text-align: center;
         margin-top: 1rem;
     }
 
-    .signup-link a, .password-link a {
+    .signup-link a,
+    .password-link a {
         color: var(--secondary-300);
+    }
+
+    #current-password {
+        padding: 0.4rem;
+    }
+
+    .login-btn:valid:hover,
+    .login-btn:valid:focus {
+        cursor: pointer;
+        background-color: var(--success-700);
+        color: var(--neutral-100);
+    }
+
+    .userform-container .password-container {
+        display: flex;
+        flex-direction: row;
+        flex-grow: 10;
+    }
+
+    .userform-container .password-container input {
+        width: 100%;
+    }
+
+    .userform-container .password-container .toggle-password {
+        margin-left: -3rem;
+        padding: 0;
+        z-index: 1;
+        border: none;
+    }
+
+    @media (min-width: 48em) {
     }
     @media screen and (max-width: 480px) {
         .userform-container {

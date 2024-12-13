@@ -2,6 +2,7 @@
 import Marketing from '../layouts/Marketing.astro'
 import LoginForm from '../components/Forms/Login.astro'
 import { errMessages } from '../utils/error.ts'
+import Register from '../components/Forms/Register.astro'
 
 const code = Astro.url.searchParams.get('code') || 'UNKNOWN_ERROR'
 const errorInfo = errMessages[code]
@@ -11,20 +12,29 @@ const errorInfo = errMessages[code]
     {
         errorInfo && (
             <div>
-                <h1>{errorInfo.title}</h1>
-                <br />
-                <p>{errorInfo.description}</p>
-                <br />
-                {(code === 'UNAUTHORIZED' ||
-                    code === 'INVALID_CREDS' ||
-                    code === 'USER_EXISTS') && (
+                <div class="error-ui">
+                    <h1>{errorInfo.title}</h1>
+                    <br />
+                    <p>{errorInfo.description}</p>
+                    <br />
+                </div>
+                {(code === 'UNAUTHORIZED' || code === 'INVALID_CREDS') && (
                     <>
                         <LoginForm />
-                        <a href="/signup">Follow me to Sign Up.</a>
                     </>
                 )}
-                <a href="/">Back to Home</a>
+                {code === 'USER_EXISTS' && (
+                    <>
+                        <Register />
+                    </>
+                )}
             </div>
         )
     }
 </Marketing>
+
+<style>
+    .error-ui {
+        text-align: center;
+    }
+</style>

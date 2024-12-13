@@ -48,7 +48,6 @@ const user = Astro.props.user
     const email = user.email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     const destroyPattern = user.name + '\/' + email
     const destroyRx = new RegExp(destroyPattern)
-    console.log({ destroyPattern, destroyRx, email })
 
     function validateSubmission(event) {
         let data = event.target.value
